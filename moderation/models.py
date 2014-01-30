@@ -1,7 +1,4 @@
 from django.db import models
-from django.db.models import signals
-
-from .actions import ModerationAction
 
 
 class BannedWord(models.Model):
@@ -28,9 +25,3 @@ class BannedUser(models.Model):
 
     def __unicode__(self):
         return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
-
-
-# If user is banned then it deletes his saved posts
-moderation_action = ModerationAction()
-signals.post_save.connect(moderation_action.ban_users_posts, sender=BannedUser,
-                          dispatch_uid="Remove_banned_posts")

@@ -1,7 +1,7 @@
 from django.db.models import get_model
 from django.core.exceptions import ImproperlyConfigured
 
-from .. import settings
+from moderation import settings
 
 
 def get_post_model():

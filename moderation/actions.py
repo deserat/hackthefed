@@ -1,5 +1,7 @@
 import logging
 
+from django.db.models import signals
+
 from .models import BannedUser, BannedWord, DefaultBannedWord
 from . import get_post_model
 
@@ -85,3 +87,9 @@ class ModerationAction(object):
         '''Return True if word is a banned word'''
         banned_words = self.get_banned_words()
         return word in banned_words
+
+
+# If user is banned then it deletes his saved posts
+moderation_action = ModerationAction()
+signals.post_save.connect(moderation_action.ban_users_posts, sender=BannedUser,
+                          dispatch_uid="Remove_banned_posts")
