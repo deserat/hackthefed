@@ -22,8 +22,8 @@ class ModerationAction(object):
         '''Return a list of all banned words. It can include
         or not default banned words. Banned words are customizable from
         admin interface'''
-        custom_banned_words = BannedWord.objects.values_list('word', flat=True)
-        default_banned_words = DefaultBannedWord.objects.values_list('word', flat=True)
+        custom_banned_words = set([item for item in BannedWord.objects.values_list('word', flat=True)])
+        default_banned_words = set([item for item in DefaultBannedWord.objects.values_list('word', flat=True)])
         return custom_banned_words.union(default_banned_words)
 
     def set_default_banned_words(self, banned_words):
