@@ -1,5 +1,8 @@
 import logging
 
+from django.conf import settings
+from django.core.mail import send_mail
+
 from .models import BannedUser, BannedWord, DefaultBannedWord, FlaggedUser
 from . import get_post_model
 
@@ -82,18 +85,16 @@ class WordModerator(object):
         '''Returns a list with all posts which contains banned words'''
         pass
 
-    def passes_moderation(self, processed_data):
-        '''Returns True if processed_data haven't any banned word, otherwise
-        returns False'''
+    def passes_moderation(self, content):
+        '''Returns True if content haven't any banned word, otherwise returns False'''
         banned_words = self.get_banned_words()
-        words = set(processed_data.split())
+        words = set(content.split())
         if len(banned_words.intersection(words)) > 0:
             return True
         return False
 
     def ban_users_posts(self, sender, instance, created, **kwargs):
-        '''Bans (delete) all posts of a given user. This method will be invoked from a
-        Django signal'''
+        '''Bans (delete) all posts of a given user. This method will be invoked from a Django signal'''
         source = instance.source
         poster_sn = instance.poster_sn
         poster_id = instance.poster_id
@@ -107,6 +108,23 @@ class WordModerator(object):
         banned_words = self.get_banned_words()
         return word in banned_words
 
+
+class CommentModerator(object):
+    '''This class moderates comments'''
+    def __init__(self, comment):
+        self.comment = comment
+
+    def email_notification(self, content_object):
+        '''Sends an email when a new comment has been posted'''
+        recipient_list = [manager_tuple[1] for manager_tuple in settings.MANAGERS]
+        subject = "Moderation: New comment has been posted"
+        message = "Object: {0}. Comment: {1}".format(content_object, self.comment)
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, fail_silently=True)
+
+    def passes_moderation(self):
+        '''Returns True if comment haven't any banned word, otherwise returns False'''
+        word_moderator = WordModerator()
+        return word_moderator.passes_moderation(self.comment)
 
 # If user is banned then it deletes his saved posts
 # moderation_action = ModerationAction()
