@@ -22,6 +22,7 @@ class BannedUser(models.Model):
     poster_sn = models.TextField()
     poster_id = models.TextField(blank=True, help_text='Required for Facebook users')
     source = models.CharField(max_length=255, db_index=True)
+    ban_date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
@@ -33,6 +34,7 @@ class FlaggedUser(models.Model):
     # User who flags another one
     source = models.CharField(max_length=255, db_index=True)
     who_flags = models.TextField()
+    flag_date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
