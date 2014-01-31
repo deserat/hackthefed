@@ -17,7 +17,8 @@ class ModerationException(Exception):
 
 
 class UserModerator(object):
-    '''This class encapsulates actions for moderating users'''
+    '''This class encapsulates actions for moderating users
+    '''
     def get_banned_users(self):
         '''Returns all banned users'''
         return BannedUser.objects.all()
@@ -57,7 +58,8 @@ class UserModerator(object):
 
 
 class WordModerator(object):
-    '''This class encapsulates actions for moderating words/posts'''
+    '''This class encapsulates actions for moderating words/posts
+    '''
     def get_banned_words(self):
         '''Return a list of all banned words. It can include
         or not default banned words. Banned words are customizable from
@@ -110,23 +112,16 @@ class WordModerator(object):
 
 
 class CommentModerator(object):
-    '''This class moderates comments'''
-    def __init__(self, comment):
-        self.comment = comment
-
-    def email_notification(self, content_object):
+    '''This class moderates comments
+    '''
+    def email_notification(self, comment, content_object):
         '''Sends an email when a new comment has been posted'''
         recipient_list = [manager_tuple[1] for manager_tuple in settings.MANAGERS]
         subject = "Moderation: New comment has been posted"
-        message = "Object: {0}. Comment: {1}".format(content_object, self.comment)
+        message = "Object: {0}. Comment: {1}".format(content_object, comment)
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, fail_silently=True)
 
-    def passes_moderation(self):
+    def passes_moderation(self, comment):
         '''Returns True if comment haven't any banned word, otherwise returns False'''
         word_moderator = WordModerator()
-        return word_moderator.passes_moderation(self.comment)
-
-# If user is banned then it deletes his saved posts
-# moderation_action = ModerationAction()
-# signals.post_save.connect(moderation_action.ban_users_posts, sender=BannedUser,
-#                           dispatch_uid="Remove_banned_posts")
+        return word_moderator.passes_moderation(comment)
