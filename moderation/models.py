@@ -25,3 +25,14 @@ class BannedUser(models.Model):
 
     def __unicode__(self):
         return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
+
+
+class FlaggedUser(models.Model):
+    '''This model represents a user that has been flagged for another user'''
+    poster_sn = models.TextField()
+    # User who flags another one
+    source = models.CharField(max_length=255, db_index=True)
+    who_flags = models.TextField()
+
+    def __unicode__(self):
+        return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)

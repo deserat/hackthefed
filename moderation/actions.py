@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import signals
 
-from .models import BannedUser, BannedWord, DefaultBannedWord
+from .models import BannedUser, BannedWord, DefaultBannedWord, FlaggedUser
 from . import get_post_model
 
 
@@ -84,9 +84,28 @@ class ModerationAction(object):
         users_posts.delete()
 
     def is_banned_word(self, word):
-        '''Return True if word is a banned word'''
+        '''Returns True if given word is a banned word'''
         banned_words = self.get_banned_words()
         return word in banned_words
+
+    def flag_user(self, source, user_who, user_flagged):
+        '''Flags a user'''
+        flagged_user = FlaggedUser(poster_sn=user_flagged, source=source, who_flags=user_who)
+        flagged_user.save()
+
+    def unflag_user(self, source, user_who, user_flagged):
+        '''Unflags a user'''
+        try:
+            flagged_user = FlaggedUser.objects.get(poster_sn=user_flagged,
+                                                   source=source,
+                                                   who_flags=user_who)
+            flagged_user.delete()
+        except FlaggedUser.DoesNotExists:
+            self.logger.info(u"poster_id={0}, source={1} wasn't flagged".format(user_flagged, source))
+
+    def get_flagged_users(self):
+        '''Returns a list with users that has been flagged'''
+        return FlaggedUser.objects.all()
 
 
 # If user is banned then it deletes his saved posts
