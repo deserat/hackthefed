@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from .models import ModeratedObject
 from .models import MODERATION_STATUS_APPROVED, MODERATION_STATUS_REJECTED
-from .models import MODERATION_STATUS_PENDING, MODERATION_STATUS
+from .models import MODERATION_STATUS_PENDING
 
 
 class ModerationRegistrationException(Exception):
@@ -47,7 +47,7 @@ class Moderator(object):
             return self._status
 
         def _get_status_display(self):
-            return dict(MODERATION_STATUS)[self.moderation_status]
+            return getattr(self, 'moderation_object_name').get_status_display()
 
         def approve(self, reason=''):
             getattr(self, 'moderation_object_name').approve(reason)
@@ -67,7 +67,7 @@ class Moderator(object):
         # Adding methods
         cls.add_to_class('moderation_object_name', property(_get_moderation_object))
         cls.add_to_class('moderation_status', property(_get_moderation_status))
-        cls.add_to_class('moderation_status_display', _get_status_display)
+        cls.add_to_class('get_moderation_status_display', _get_status_display)
         cls.add_to_class('approve', approve)
         cls.add_to_class('reject', reject)
         cls.add_to_class('is_approved', is_approved)

@@ -85,11 +85,14 @@ class ModeratedObject(models.Model):
     objects = ModeratedObjectManager()
 
     def __unicode__(self):
-        return '[{0}] {1}'.format(self.status, self.content_object)
+        return '[{0}] {1}'.format(self.get_status_display(), self.content_object)
 
     def get_absolute_url(self):
         if hasattr(self.content_object, "get_absolute_url"):
             return self.content_object.get_absolute_url()
+
+    def get_status_display(self):
+        return dict(MODERATION_STATUS)[self.status]
 
     def approve(self, reason=''):
         self._moderate(MODERATION_STATUS_APPROVED, reason)
