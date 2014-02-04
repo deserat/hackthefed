@@ -64,6 +64,15 @@ class Moderator(object):
         def is_pending(self):
             return self.moderation_status == MODERATION_STATUS_PENDING
 
+        def flag(self, username=''):
+            getattr(self, 'moderation_object_name').flag(username)
+
+        def unflag(self, username=''):
+            getattr(self, 'moderation_object_name').unflag(username)
+
+        def is_flagged(self):
+            return getattr(self, 'moderation_object_name').flagged
+
         # Adding methods
         cls.add_to_class('moderation_object_name', property(_get_moderation_object))
         cls.add_to_class('moderation_status', property(_get_moderation_status))
@@ -73,6 +82,9 @@ class Moderator(object):
         cls.add_to_class('is_approved', is_approved)
         cls.add_to_class('is_rejected', is_rejected)
         cls.add_to_class('is_pending', is_pending)
+        cls.add_to_class('flag', flag)
+        cls.add_to_class('unflag', unflag)
+        cls.add_to_class('is_flagged', is_flagged)
 
     def _save_handler(self, sender, instance, **kwargs):
         if kwargs.get('created', None):

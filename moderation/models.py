@@ -79,6 +79,7 @@ class ModeratedObject(models.Model):
     status = models.SmallIntegerField(choices=MODERATION_STATUS, default=MODERATION_STATUS_PENDING)
     reason = models.TextField(blank=True)
     flagged = models.BooleanField(default=False)
+    flagged_by = models.TextField(blank=True)
     flagged_at = models.DateTimeField(blank=True, null=True)
 
     # Manager
@@ -100,8 +101,12 @@ class ModeratedObject(models.Model):
     def reject(self, reason=''):
         self._moderate(MODERATION_STATUS_REJECTED, reason)
 
-    def flag(self):
-        pass
+    def flag(self, username=''):
+        self._mark_flag(True, username)
+
+    def unflag(self, username=''):
+        '''username should be an admin user'''
+        self._mark_flag(False, username)
 
     def _moderate(self, status, reason=''):
         self.status = status
@@ -109,3 +114,8 @@ class ModeratedObject(models.Model):
         self.reason = reason
 
         self.save()
+
+    def _mark_flag(self, status, username=''):
+        self.flagged = status
+        self.flagged_by = username
+        self.flagged_at = datetime.datetime.utcnow().replace(tzinfo=utc)
