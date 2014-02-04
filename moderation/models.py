@@ -82,6 +82,10 @@ class ModeratedObject(models.Model):
     flagged_by = models.TextField(blank=True)
     flagged_at = models.DateTimeField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Moderation Queue'
+        verbose_name_plural = 'Moderation Queue'
+
     # Manager
     objects = ModeratedObjectManager()
 
