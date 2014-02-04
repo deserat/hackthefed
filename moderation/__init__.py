@@ -2,7 +2,8 @@ from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 
 from .models import ModeratedObject
-from .models import MODERATION_STATUS_APPROVED, MODERATION_STATUS_REJECTED, MODERATION_STATUS_PENDING
+from .models import MODERATION_STATUS_APPROVED, MODERATION_STATUS_REJECTED
+from .models import MODERATION_STATUS_PENDING, MODERATION_STATUS
 
 
 class ModerationRegistrationException(Exception):
@@ -30,6 +31,13 @@ class Moderator(object):
             """Simple accessor for moderated_object that caches the object"""
             if not hasattr(self, '_moderation_object_name'):
                 self._moderation_object_name = ModeratedObject.objects.get_for_instance(self)
+                if self._moderation_object_name is None:
+                    # Record previously exists in DB but reference to
+                    # ModeratedObject wasn't created
+                    mo = ModeratedObject(content_object=self)
+                    mo.save()
+                    self._moderation_object_name = mo
+
             return self._moderation_object_name
 
         def _get_moderation_status(self):
@@ -37,6 +45,9 @@ class Moderator(object):
             if not hasattr(self, '_status'):
                 return getattr(self, 'moderation_object_name').status
             return self._status
+
+        def _get_status_display(self):
+            return dict(MODERATION_STATUS)[self.moderation_status]
 
         def approve(self, reason=''):
             getattr(self, 'moderation_object_name').approve(reason)
@@ -56,6 +67,7 @@ class Moderator(object):
         # Adding methods
         cls.add_to_class('moderation_object_name', property(_get_moderation_object))
         cls.add_to_class('moderation_status', property(_get_moderation_status))
+        cls.add_to_class('moderation_status_display', _get_status_display)
         cls.add_to_class('approve', approve)
         cls.add_to_class('reject', reject)
         cls.add_to_class('is_approved', is_approved)
