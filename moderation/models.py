@@ -15,14 +15,6 @@ class BannedWord(models.Model):
         return self.word
 
 
-class DefaultBannedWord(models.Model):
-    '''We'll have a list of default banned words'''
-    word = models.CharField(max_length=100)
-
-    def __unicode__(self):
-        return self.word
-
-
 class BannedUser(models.Model):
     '''This model represents a banned user'''
     poster_sn = models.TextField()
@@ -125,4 +117,3 @@ class ModeratedObject(models.Model):
         self.flagged_at = datetime.datetime.utcnow().replace(tzinfo=utc)
 
         self.save()
-

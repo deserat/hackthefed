@@ -5,7 +5,7 @@ from fabric.colors import green
 
 from django.core.management.base import BaseCommand, CommandError
 
-from moderation.models import DefaultBannedWord
+from moderation.models import BannedWord
 from moderation.moderators import WordModerator
 
 
@@ -25,7 +25,7 @@ class Command(BaseCommand):
             for item in json_data:
                 word = item['fields']['word']
                 if not word in banned_words:
-                    default_word = DefaultBannedWord(word=word)
+                    default_word = BannedWord(word=word)
                     default_word.save()
                     new_words += 1
         except IOError:

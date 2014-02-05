@@ -1,6 +1,6 @@
 from scarlet.cms import bundles, site, views
 
-from .models import BannedWord, BannedUser, DefaultBannedWord, ModeratedObject
+from .models import BannedWord, BannedUser, ModeratedObject
 from .forms import SourceForm
 
 import groups
@@ -11,14 +11,6 @@ class BannedWordBundle(bundles.Bundle):
 
     class Meta:
         model = BannedWord
-        primary_model_bundle = True
-
-
-class DefaultBannedWordBundle(bundles.Bundle):
-    required_groups = bundles.PARENT
-
-    class Meta:
-        model = DefaultBannedWord
         primary_model_bundle = True
 
 
@@ -52,12 +44,10 @@ class ModerationBundle(bundles.BlankBundle):
     dashboard = (
         ('banned_word',),
         ('banned_user',),
-        ('default_banned_word',),
         ('moderated_content',),
     )
 
     banned_word = BannedWordBundle.as_subbundle(name='banned_word')
-    default_banned_word = DefaultBannedWordBundle.as_subbundle(name='default_banned_word')
     banned_user = BannedUserBundle.as_subbundle(name='banned_user')
     moderated_content = ModeratedObjectBundle.as_subbundle(name='moderated_content')
 
