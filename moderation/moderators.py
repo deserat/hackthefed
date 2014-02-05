@@ -4,7 +4,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from .models import BannedUser, BannedWord, FlaggedUser
-from . import get_post_model
 
 
 # Generic logger
@@ -97,17 +96,6 @@ class WordModerator(object):
         if len(banned_words.intersection(words)) > 0:
             return True
         return False
-
-    def ban_users_posts(self, sender, instance, created, **kwargs):
-        '''Bans (delete) all posts of a given user. This method will be invoked from a Django signal
-        '''
-        source = instance.source
-        poster_sn = instance.poster_sn
-        poster_id = instance.poster_id
-        users_posts = get_post_model().objects.filter(poster_id=poster_id,
-                                                      poster_sn=poster_sn,
-                                                      source__poller=source)
-        users_posts.delete()
 
     def is_banned_word(self, word):
         '''Returns True if given word is a banned word
