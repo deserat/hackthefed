@@ -123,3 +123,6 @@ class ModeratedObject(models.Model):
         self.flagged = status
         self.flagged_by = username
         self.flagged_at = datetime.datetime.utcnow().replace(tzinfo=utc)
+
+        self.save()
+
