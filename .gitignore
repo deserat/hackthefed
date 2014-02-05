@@ -90,3 +90,6 @@ pip-log.txt
 # CTags
 .tags
 .tags_sorted_by_file
+
+# Docs
+docs/build/*
