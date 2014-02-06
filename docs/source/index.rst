@@ -59,6 +59,15 @@ next code shows you how to approve a comment::
 
     comment.approve()
 
+Previous stored records
+------------------------
+
+If you have records stored in DB before registering your model, you can create
+moderation records for them in the moderation queue. You only need to execute
+the following command::
+
+    [comment.moderation_object_name for comment in Comment.objects.all()]
+
 Actions
 =======
 
