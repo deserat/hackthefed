@@ -21,7 +21,7 @@ class UserModerator(object):
         '''
         return BannedUser.objects.all()
 
-    def unban_user(self, poster_id, source, poster_sn=None):
+    def unban_user(self, poster_sn, source, poster_id=''):
         '''Unbans given user who has been previously banned
         '''
         try:
@@ -31,19 +31,19 @@ class UserModerator(object):
         except BannedUser.DoesNotExists:
             logger.info(u"poster_id={0}, source={1} user wasn't banned".format(poster_id, source))
 
-    def ban_user(self, poster_id, source, poster_sn=None):
+    def ban_user(self, poster_sn, source, poster_id=''):
         '''Bans a given user
         '''
         banned_user = BannedUser(poster_id=poster_id, source=source, poster_sn=poster_sn)
         banned_user.save()
 
-    def flag_user(self, source, user_who, user_flagged):
+    def flag_user(self, user_who, source, user_flagged):
         '''Flags a user
         '''
         flagged_user = FlaggedUser(poster_sn=user_flagged, source=source, who_flags=user_who)
         flagged_user.save()
 
-    def unflag_user(self, source, user_who, user_flagged):
+    def unflag_user(self, user_who, source, user_flagged):
         '''Unflags a user
         '''
         try:
@@ -74,11 +74,11 @@ class WordModerator(object):
         if not isinstance(banned_words, list):
             raise ModerationException('Please, use a list of banned words')
 
-        banned_words = self.get_banned_words()
+        stored_banned_words = self.get_banned_words()
         for word in banned_words:
-            if word not in banned_words:
+            if word not in stored_banned_words:
                 banned_words = BannedWord(word=word)
-                banned_words.objects.save(word=word)
+                banned_words.save()
 
     def get_posts_with_banned_words(self):
         '''Returns a list with all posts which contains banned words
@@ -88,11 +88,11 @@ class WordModerator(object):
     def passes_moderation(self, content):
         '''Returns True if content haven't any banned word, otherwise returns False
         '''
-        banned_words = self.get_banned_words()
+        banned_words = set(self.get_banned_words())
         words = set(content.split())
-        if len(banned_words.intersection(words)) > 0:
-            return True
-        return False
+        if len(words.intersection(banned_words)) > 0:
+            return False
+        return True
 
     def is_banned_word(self, word):
         '''Returns True if given word is a banned word
