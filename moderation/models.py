@@ -11,6 +11,9 @@ class BannedWord(models.Model):
     '''This model represents a banned word'''
     word = models.CharField(max_length=100)
 
+    class Meta:
+        ordering = ['word']
+
     def __unicode__(self):
         return self.word
 
@@ -29,6 +32,7 @@ class BannedUser(models.Model):
 class FlaggedUser(models.Model):
     '''This model represents a user that has been flagged by another user'''
     poster_sn = models.TextField()
+    poster_id = models.TextField(blank=True, help_text='Required for some networks such as FB and Instagram')
     # User who flags another one
     source = models.CharField(max_length=255, db_index=True)
     who_flags = models.TextField()
