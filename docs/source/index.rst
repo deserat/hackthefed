@@ -24,6 +24,9 @@ be moderated. Administrator user can **approve** or **reject** each record.
 *moderation* also allows us to flag records. By default, each record starts in
 *pending* status.
 
+*moderation* also provides specific models for working with banned words and
+users.
+
 This application can be integrated with **Scarlet** easily. Actually, the
 *cms_bundles.py* file allows you to build an administration interface displaying
 a moderation queue.
@@ -91,6 +94,25 @@ three possible values:
 * Approved
 * Pending
 * Rejected
+
+Actions for users and words
+----------------------------
+
+The following actions are available for working with users moderation:
+
+* **ban**: Bans a given user (using an username)
+* **unban** Unbans a given user
+* **flag**: Flags a given user
+* **unflag**: Unflags a given user
+* **get_flagged_users**: Gets a list of flagged users
+* **get_banned_users**: Gets a list of banned users
+
+The following actions are available for working with banned words:
+
+* **get_banned_words**: Gets a list of banned words.
+* **set_banned_words**: Sets a list of banned words.
+* **passes_moderation**: Returns *True* if content passes moderation.
+* **is_banned_word**: Returns *True* if given word is banned.
 
 Tests
 =====
