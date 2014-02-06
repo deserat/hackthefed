@@ -1,8 +1,5 @@
 import logging
 
-from django.conf import settings
-from django.core.mail import send_mail
-
 from .models import BannedUser, BannedWord, FlaggedUser
 
 
@@ -102,37 +99,3 @@ class WordModerator(object):
         '''
         banned_words = self.get_banned_words()
         return word in banned_words
-
-
-class CommentModerator(object):
-    '''This class moderates comments
-    '''
-    def email_notification(self, comment, content_object):
-        '''Sends an email when a new comment has been posted
-        '''
-        recipient_list = [manager_tuple[1] for manager_tuple in settings.MANAGERS]
-        subject = "Moderation: New comment has been posted"
-        message = "Object: {0}. Comment: {1}".format(content_object, comment)
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, fail_silently=True)
-
-    def passes_moderation_receiver(self, sender, **kwargs):
-        '''Connect this receiver to you signal after saving a comment.
-        If current instance doesn't pass moderation then delete it.
-        Sender instance must contain a 'comment' field
-
-        How to connect your model to this receiver:
-
-        moderator = CommentModerator()
-        post_save.connect(moderator.passes_moderation_receiver, sender=your_model)
-
-        '''
-        instance = kwargs['instance']
-        word_moderator = WordModerator()
-        if not word_moderator.passes_moderation(instance.comment):
-            instance.delete()
-
-    def passes_moderation(self, comment):
-        '''Returns True if comment haven't any banned word, otherwise returns False
-        '''
-        word_moderator = WordModerator()
-        return word_moderator.passes_moderation(comment)
