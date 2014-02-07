@@ -122,6 +122,7 @@ command line or from *cron* command:
 
 * *delete_rejected_content*: Deletes those objects marked as *rejected* in the moderation queue.
 * *create_default_banned_words*: Creates a set of default banned words.
+* *approve_content*: Approves all pending content in moderation queue.
 
 Tests
 =====
