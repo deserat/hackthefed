@@ -15,7 +15,7 @@ from moderation.models import (MODERATION_STATUS_APPROVED,
                                signal_moderated_status_changed)
 
 from moderation.moderators import UserModerator, WordModerator
-from .models import Comment
+from .models import Comment, Post
 
 
 # Setting logging for factory boy
@@ -32,6 +32,12 @@ class CommentFactory(factory.DjangoModelFactory):
 
     username = 'Username'
     content = 'This is a simple comment'
+
+
+class PostFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = Post
+
+    content = 'This is a simple content for posting'
 
 
 class ModerationTestCase(TestCase):
@@ -180,3 +186,16 @@ class WordModeratorTestCase(TestCase):
         self.moderator.set_banned_words(self.banned_words)
         self.assertTrue(self.moderator.is_banned_word(self.banned_words[0]))
         self.assertFalse(self.moderator.is_banned_word(self.content.split()[0]))
+
+    def test_pre_moderation_passes(self):
+        '''Testing pre-moderated object which passes moderation
+        '''
+        self.post = PostFactory.create()
+        self.assertEquals(self.post.moderation_status, MODERATION_STATUS_APPROVED)
+
+    def test_pre_moderation_not_passes(self):
+        '''Testing pre-moderated object which doesn't pass moderation
+        '''
+        self.moderator.set_banned_words(self.banned_words)
+        self.post = PostFactory.create(content=', '.join(self.banned_words))
+        self.assertEquals(self.post.moderation_status, MODERATION_STATUS_REJECTED)

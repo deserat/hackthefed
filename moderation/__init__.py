@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from .models import ModeratedObject
 from .models import MODERATION_STATUS_APPROVED, MODERATION_STATUS_REJECTED
 from .models import MODERATION_STATUS_PENDING
+from .moderators import WordModerator
 
 
 class ModerationRegistrationException(Exception):
@@ -14,7 +15,7 @@ class Moderator(object):
     def __init__(self):
         self._registry = {}
 
-    def register(self, model):
+    def register(self, model, pre_moderated=False, content=None):
         if model in self._registry.keys():
             raise ModerationRegistrationException("{0} has been already register".format(model))
 
@@ -23,7 +24,10 @@ class Moderator(object):
 
         self._add_fields(model)
 
-        self._registry[model] = model
+        self._registry[model] = {
+            'pre_moderated': pre_moderated,
+            'content': content,
+        }
 
     def _add_fields(self, cls):
 
@@ -44,6 +48,12 @@ class Moderator(object):
             """Simple accessor to moderation status"""
             if not hasattr(self, '_status'):
                 return getattr(self, 'moderation_object_name').status
+            return self._status
+
+        def _get_m_public(self):
+            """Simple accessor to m_public"""
+            if not hasattr(self, '_m_public'):
+                return getattr(self, 'moderation_object_name').m_public
             return self._status
 
         def _get_status_display(self):
@@ -76,6 +86,7 @@ class Moderator(object):
         # Adding methods
         cls.add_to_class('moderation_object_name', property(_get_moderation_object))
         cls.add_to_class('moderation_status', property(_get_moderation_status))
+        cls.add_to_class('m_public', property(_get_m_public))
         cls.add_to_class('get_moderation_status_display', _get_status_display)
         cls.add_to_class('approve', approve)
         cls.add_to_class('reject', reject)
@@ -87,9 +98,20 @@ class Moderator(object):
         cls.add_to_class('is_flagged', is_flagged)
 
     def _save_handler(self, sender, instance, **kwargs):
-        if kwargs.get('created', None):
-            mo = ModeratedObject(content_object=instance)
-            mo.save()
+        mo = ModeratedObject(content_object=instance)
+
+        # Checking if sender is pre-moderated
+        if moderator._registry[sender]['pre_moderated']:
+            # Sets m_public as True if content pass validation
+            field_for_moderation = moderator._registry[sender]['content']
+            if field_for_moderation:
+                content_for_moderation = instance.__getattribute__('content')
+                word_moderator = WordModerator()
+                if word_moderator.passes_moderation(content_for_moderation):
+                    mo.status = MODERATION_STATUS_APPROVED
+                else:
+                    mo.status = MODERATION_STATUS_REJECTED
+        mo.save()
 
     def _delete_handler(self, sender, instance, **kwargs):
         try:

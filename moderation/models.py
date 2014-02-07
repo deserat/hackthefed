@@ -78,6 +78,9 @@ class ModeratedObject(models.Model):
     flagged = models.BooleanField(default=False)
     flagged_by = models.TextField(blank=True)
     flagged_at = models.DateTimeField(blank=True, null=True)
+    # Next attribute indicates that model instance associated to it can be public.
+    # Defaul value is True because we're using post moderation by default
+    m_public = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Moderation Queue'
