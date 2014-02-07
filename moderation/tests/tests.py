@@ -190,6 +190,7 @@ class WordModeratorTestCase(TestCase):
     def test_pre_moderation_passes(self):
         '''Testing pre-moderated object which passes moderation
         '''
+        self.moderator.set_banned_words(self.banned_words)
         self.post = PostFactory.create()
         self.assertEquals(self.post.moderation_status, MODERATION_STATUS_APPROVED)
 
