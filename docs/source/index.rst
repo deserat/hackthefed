@@ -114,6 +114,15 @@ The following actions are available for working with banned words:
 * **passes_moderation**: Returns *True* if content passes moderation.
 * **is_banned_word**: Returns *True* if given word is banned.
 
+Available commands
+==================
+
+The *moderation* application offers you different commands to be invoked from
+command line or from *cron* command:
+
+* *delete_rejected_content*: Deletes those objects marked as *rejected* in the moderation queue.
+* *create_default_banned_words*: Creates a set of default banned words.
+
 Tests
 =====
 
