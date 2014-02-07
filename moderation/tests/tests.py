@@ -11,7 +11,9 @@ from moderation.models import (MODERATION_STATUS_APPROVED,
                                ModeratedObject,
                                BannedUser,
                                FlaggedUser,
-                               BannedWord)
+                               BannedWord,
+                               signal_moderated_status_changed)
+
 from moderation.moderators import UserModerator, WordModerator
 from .models import Comment
 
@@ -20,6 +22,9 @@ from .models import Comment
 logger = logging.getLogger('factory')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.WARNING)
+
+# Generic logger
+logger_g = logging.getLogger(__name__)
 
 
 class CommentFactory(factory.DjangoModelFactory):
@@ -33,6 +38,10 @@ class ModerationTestCase(TestCase):
     '''Testing generic moderation using a specific Comment object defined in
     models.py
     '''
+    def _signal_handler(self, sender, **kwargs):
+        self.assertEquals(kwargs['old_status'], MODERATION_STATUS_PENDING)
+        self.assertEquals(kwargs['new_status'], MODERATION_STATUS_APPROVED)
+
     def setUp(self):
         self.comment = CommentFactory.create()
 
@@ -77,6 +86,13 @@ class ModerationTestCase(TestCase):
     def test_is_pending(self):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.assertEquals(self.comment.is_pending(), True)
+
+    def test_status_changed(self):
+        '''Tests if moderated_status_changed custom signal works properly
+        '''
+        signal_moderated_status_changed.connect(self._signal_handler, sender=ModeratedObject)
+        self.comment.approve()
+        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_APPROVED)
 
 
 class BannedUserFactory(factory.DjangoModelFactory):

@@ -114,6 +114,13 @@ The following actions are available for working with banned words:
 * **passes_moderation**: Returns *True* if content passes moderation.
 * **is_banned_word**: Returns *True* if given word is banned.
 
+Signals
+=======
+
+The application will launch custom signals when some events happens:
+
+* *signal_moderated_status_changed*: Launched when an object instance change its status.
+
 Available commands
 ==================
 

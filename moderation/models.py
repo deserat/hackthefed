@@ -5,6 +5,7 @@ from django.utils.timezone import utc
 from django.db import models
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from django import dispatch
 
 
 class BannedWord(models.Model):
@@ -121,3 +122,19 @@ class ModeratedObject(models.Model):
         self.flagged_at = datetime.datetime.utcnow().replace(tzinfo=utc)
 
         self.save()
+
+
+# The following signal will be launched when moderation status will be changed
+signal_moderated_status_changed = dispatch.Signal(providing_args=['old_status', 'new_status'])
+
+
+# Signals handlers
+def moderated_pre_save_handler(sender, instance, **kwargs):
+    if instance.pk is not None:
+        obj = ModeratedObject.objects.get(pk=instance.pk)
+        if obj.status != instance.status:
+            signal_moderated_status_changed.send(sender=sender, old_status=obj.status, new_status=instance.status)
+
+
+# Connecting signals
+models.signals.pre_save.connect(moderated_pre_save_handler, sender=ModeratedObject)
