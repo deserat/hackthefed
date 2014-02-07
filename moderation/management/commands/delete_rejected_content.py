@@ -46,7 +46,7 @@ class Command(BaseCommand):
         for rejected in rejected_objects:
             content_object = rejected.content_object
             if not dry_run:
-                #content_object.delete()
+                content_object.delete()
                 logger.info(u'content_object {0} has been deleted'.format(content_object))
             deleted_objects += 1
 
