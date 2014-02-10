@@ -55,11 +55,13 @@ class ModerationTestCase(TestCase):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.comment.approve()
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_APPROVED)
+        self.assertEquals(self.comment.m_public, True)
 
     def test_reject(self):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.comment.reject()
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_REJECTED)
+        self.assertEquals(self.comment.m_public, False)
 
     def test_flag(self):
         self.comment.flag()

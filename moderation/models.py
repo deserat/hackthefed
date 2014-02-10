@@ -116,6 +116,10 @@ class ModeratedObject(models.Model):
         self.status = status
         self.last_moderation_at = datetime.datetime.utcnow().replace(tzinfo=utc)
         self.reason = reason
+        if status == MODERATION_STATUS_APPROVED:
+            self.m_public = True
+        elif status == MODERATION_STATUS_REJECTED:
+            self.m_public = False
 
         self.save()
 
