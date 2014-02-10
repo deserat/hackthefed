@@ -12,8 +12,8 @@ Contents:
    :maxdepth: 2
 
 
-Moderation
-==========
+Introduction
+============
 
 **moderation** is a pluggable Django's application for moderating content. This
 application uses the *registration pattern* for registering those models that
@@ -27,7 +27,21 @@ be moderated. Administrator user can **approve** or **reject** each record.
 *moderation* also provides specific models for working with banned words and
 users.
 
-This application can be integrated with **Scarlet** easily. Actually, the
+The application allows us to use two different approaches for moderation:
+
+1. **Post-moderated**: All records will be *public* and the administrator should decide
+about marking each one as *rejected* or *approved*. This is the default behavior.
+
+2. **Pre-moderated**: Records won't be *public* by default, and the application
+will check if the content of each record passes or not the moderation checking
+the *banned words*. If *content* passes moderation then *public* will be *True*,
+otherwise *public* will be *False*.
+
+The *public* flag should be used by the application which is using *moderation*
+application, implementing the mechanisms to display or not the related content to
+the final user.
+
+This application can be easily integrated with **Scarlet**. Actually, the
 *cms_bundles.py* file allows you to build an administration interface displaying
 a moderation queue.
 
@@ -61,6 +75,18 @@ next code shows you how to approve a comment::
     comment.save()
 
     comment.approve()
+
+If you need to use the *pre-moderation* approach, you must indicate two different
+parameters when registering your models:
+
+* *pre_moderated=True*: Boolean value.
+* *content*: Model field (*string*) which contains the text that is going to be pre-moderated.
+
+The following code shows you how to indicate that records belonging to *Comment*
+model should be pre-moderated::
+
+    moderator.register(Comment, pre_moderated=True, content='content')
+
 
 Previous stored records
 ------------------------
