@@ -200,3 +200,4 @@ class WordModeratorTestCase(TestCase):
         self.moderator.set_banned_words(self.banned_words)
         self.post = PostFactory.create(content=', '.join(self.banned_words))
         self.assertEquals(self.post.moderation_status, MODERATION_STATUS_REJECTED)
+        self.assertEquals(self.post.m_public, False)

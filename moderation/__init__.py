@@ -111,6 +111,7 @@ class Moderator(object):
                     mo.status = MODERATION_STATUS_APPROVED
                 else:
                     mo.status = MODERATION_STATUS_REJECTED
+                    mo.m_public = False
         mo.save()
 
     def _delete_handler(self, sender, instance, **kwargs):
