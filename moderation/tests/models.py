@@ -1,9 +1,9 @@
 from django.db import models
 
-from moderation import moderator
+from moderation.models import ModeratedContent
 
 
-class Comment(models.Model):
+class Comment(ModeratedContent):
     username = models.TextField()
     content = models.TextField()
 
@@ -11,11 +11,8 @@ class Comment(models.Model):
         return u"{0} - {1}".format(self.username, self.content)
 
 
-class Post(models.Model):
+class Post(ModeratedContent):
     content = models.TextField()
 
     def __unicode__(self):
         return u"{0}".format(self.content)
-
-moderator.register(Comment)
-moderator.register(Post, pre_moderated=True, content='content')
