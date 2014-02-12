@@ -15,31 +15,23 @@ Contents:
 Introduction
 ============
 
-**moderation** is a pluggable Django's application for moderating content. This
-application uses the *registration pattern* for registering those models that
-are going to be moderated.
+**moderation** is a pluggable Django's application for moderating content.
 
-When a new record for a registered model is created, *moderation* marks it to
-be moderated. Administrator user can **approve** or **reject** each record.
-*moderation* also allows us to flag records. By default, each record starts in
-*pending* status.
+For moderating an object, you only need to make your model inherits from a
+specific model implemented on *moderation* application. The *moderation* application
+uses an *Abstract Base Class (ABC)*.
 
 *moderation* also provides specific models for working with banned words and
 users.
 
 The application allows us to use two different approaches for moderation:
 
-1. **Post-moderated**: All records will be *public* and the administrator should decide
-about marking each one as *rejected* or *approved*. This is the default behavior.
+1. **Post-moderated**: Default behavior. The administrator (human) must check
+moderation queue to *approve* or *reject* content.
 
-2. **Pre-moderated**: Records won't be *public* by default, and the application
-will check if the content of each record passes or not the moderation checking
-the *banned words*. If *content* passes moderation then *public* will be *True*,
-otherwise *public* will be *False*.
-
-The *public* flag should be used by the application which is using *moderation*
-application, implementing the mechanisms to display or not the related content to
-the final user.
+2. **Pre-moderated**: The application will check if the content of each record
+passes or not the moderation checking the *banned words*. If *content* passes
+moderation then content will be *approved*, otherwise content will be *rejected*.
 
 This application can be easily integrated with **Scarlet**. Actually, the
 *cms_bundles.py* file allows you to build an administration interface displaying
@@ -58,44 +50,23 @@ application to your *INSTALLED_APPS* variable in your *settings.py* file::
         'moderation',
     )
 
-You need to *register* each model you want to moderate. For example, the following code
-register the existing *Comment* model::
+Make your models inherit from **ModeratedContent** model, for example::
 
-    from moderation import moderator
+    class Comment(ModeratedContent):
+        username = models.TextField()
+        content = models.TextField()
 
-    moderator.register(Comment)
+You can approve content invoking to *approve()* method as follows::
 
-Each model must be registered once. It's a good idea to register each model in
-your *models.py* file.
-
-Once your model is registered, you can work with each instance of this model. The
-next code shows you how to approve a comment::
-
-    comment = Comment(content='This is the comment')
-    comment.save()
-
+    comment = Comment(content='This is the content')
     comment.approve()
 
-If you need to use the *pre-moderation* approach, you must indicate two different
-parameters when registering your models:
+If you need to use the *pre-moderation* approach, you must set two different
+properties (model class name and field with content to be moderated) in your
+*settings.py* file::
 
-* *pre_moderated=True*: Boolean value.
-* *content*: Model field (*string*) which contains the text that is going to be pre-moderated.
-
-The following code shows you how to indicate that records belonging to *Comment*
-model should be pre-moderated::
-
-    moderator.register(Comment, pre_moderated=True, content='content')
-
-
-Previous stored records
-------------------------
-
-If you have records stored in DB before registering your model, you can create
-moderation records for them in the moderation queue. You only need to execute
-the following command::
-
-    [comment.moderation_object_name for comment in Comment.objects.all()]
+    PRE_MODERATE_Comment = True
+    PRE_MODERATE_Comment_content_field = 'content'
 
 Actions
 =======
@@ -104,15 +75,9 @@ The *moderation* applications allows you to execute the following main actions:
 
 * **approve**: Approve the content
 * **reject**: Reject the content
-* **flag**: Flag for moderation
-* **unflag**: Delete previous flag
+* **flag**: Flag content and users for moderation
 
 Other methods provided by *moderation** are these:
-
-* **is_approved**: Returns **True** if record has been approved.
-* **is_rejected**: Returns **True** if record has been rejected.
-* **is_pending**: Returns **True** if record is pending of moderation.
-* **get_moderation_status_display**: Gets the current *status* of the record.
 
 Also, each moderated record has a property called *moderation_status*, which has
 three possible values:
@@ -121,41 +86,14 @@ three possible values:
 * Pending
 * Rejected
 
-Actions for users and words
-----------------------------
-
-The following actions are available for working with users moderation:
-
-* **ban**: Bans a given user (using an username)
-* **unban** Unbans a given user
-* **flag**: Flags a given user
-* **unflag**: Unflags a given user
-* **get_flagged_users**: Gets a list of flagged users
-* **get_banned_users**: Gets a list of banned users
-
-The following actions are available for working with banned words:
-
-* **get_banned_words**: Gets a list of banned words.
-* **set_banned_words**: Sets a list of banned words.
-* **passes_moderation**: Returns *True* if content passes moderation.
-* **is_banned_word**: Returns *True* if given word is banned.
-
-Signals
-=======
-
-The application will launch custom signals when some events happens:
-
-* *signal_moderated_status_changed*: Launched when an object instance change its status.
-
 Available commands
 ==================
 
 The *moderation* application offers you different commands to be invoked from
 command line or from *cron* command:
 
-* *delete_rejected_content*: Deletes those objects marked as *rejected* in the moderation queue.
-* *create_default_banned_words*: Creates a set of default banned words.
-* *approve_content*: Approves all pending content in moderation queue.
+* *delete_rejected_content*: Deletes those objects of given models marked as *rejected* in the moderation queue.
+* *approve_content*: Approves all pending content of given models in moderation queue.
 
 Tests
 =====

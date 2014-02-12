@@ -1,17 +1,17 @@
 import logging
 from optparse import make_option
 
-from fabric.colors import green, red
+from django.core.management.base import BaseCommand, CommandError
+from django.db.models.loading import get_model
 
-from django.core.management.base import BaseCommand
-
-from moderation.models import ModeratedObject, MODERATION_STATUS_REJECTED
+from moderation.models import MODERATION_STATUS_REJECTED
 
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    args = '<app_name>.<model_name> <app_name>.<model_name> ... <app_name>.<model_name>'
     help = 'Delete original content which has been rejected by moderation'
 
     option_list = BaseCommand.option_list + (
@@ -28,7 +28,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        output_msg = "{0} content objects has been deleted"
+        if len(args) < 1:
+            raise CommandError('Please, provide a model name')
+
         dry_run = options['dry_run']
         no_confirmation = options['no_confirmation']
 
@@ -36,20 +38,19 @@ class Command(BaseCommand):
             input_msg = 'Content is going to be deleted. Continue [Y/n]? '
             input_msg = raw_input(input_msg)
             if input_msg not in ('Y', 'n'):
-                exit(red("Please, choose 'Y' or 'n'"))
+                raise CommandError("Please, choose 'Y' or 'n'")
             if input_msg == 'n':
-                exit(red('Command aborted'))
+                raise CommandError('Command aborted')
 
-        deleted_objects = 0
-
-        rejected_objects = ModeratedObject.objects.filter(status=MODERATION_STATUS_REJECTED)
-        for rejected in rejected_objects:
-            content_object = rejected.content_object
-            if not dry_run:
-                content_object.delete()
-                logger.info(u'content_object {0} has been deleted'.format(content_object))
-            deleted_objects += 1
-
-        if dry_run:
-            output_msg = "{0} content objects are going to be deleted"
-        print(green(output_msg.format(deleted_objects)))
+        for arg in args:
+            app_name = arg.split('.')[0]
+            model_name = arg.split('.')[1]
+            model = get_model(app_name, model_name)
+            if model is None:
+                raise CommandError('Cannot import given model: {0}'.format(arg))
+            rejected_records = model.objects.filter(moderation_status=MODERATION_STATUS_REJECTED)
+            if dry_run:
+                logger.info('{0} are going to be deleted for {1}'.format(rejected_records.count(), arg))
+            else:
+                rejected_records.using('default').delete()
+                logger.info('{0} has been deleted for {1}'.format(rejected_records.count(), arg))

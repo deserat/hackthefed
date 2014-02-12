@@ -1,18 +1,19 @@
 import logging
 from optparse import make_option
 
-from fabric.colors import green
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
+from django.db.models.loading import get_model
 
-from moderation.models import ModeratedObject, MODERATION_STATUS_PENDING, MODERATION_STATUS_APPROVED
+from moderation.models import MODERATION_STATUS_PENDING, MODERATION_STATUS_APPROVED
 
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'Approve all pending content for moderation'
+    args = '<app_name>.<model_name> <app_name>.<model_name> ... <app_name>.<model_name>'
+    help = 'Approve pending content for records of given models'
 
     option_list = BaseCommand.option_list + (
         make_option('--dry-run',
@@ -23,16 +24,20 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        if len(args) < 1:
+            raise CommandError('Please, provide a model name')
+
         dry_run = options['dry_run']
 
-        pending_objects = ModeratedObject.objects.filter(status=MODERATION_STATUS_PENDING)
-
-        total_pending = pending_objects.count()
-
-        if dry_run:
-            output_msg = '{0} pending records are going to be approved'
-        else:
-            pending_objects.update(status=MODERATION_STATUS_APPROVED)
-            output_msg = '{0} pending records has been approved'
-            logger.info(output_msg.format(total_pending))
-        print(green(output_msg.format(total_pending)))
+        for arg in args:
+            app_name = arg.split('.')[0]
+            model_name = arg.split('.')[1]
+            model = get_model(app_name, model_name)
+            if model is None:
+                raise CommandError('Cannot import given model: {0}'.format(arg))
+            pending_records = model.objects.filter(moderation_status=MODERATION_STATUS_PENDING)
+            if dry_run:
+                logger.info('{0} are going to be approved for {1}'.format(pending_records.count(), arg))
+            else:
+                pending_records.update(moderation_status=MODERATION_STATUS_APPROVED)
+                logger.info('{0} has been updated for {1}'.format(pending_records.count(), arg))

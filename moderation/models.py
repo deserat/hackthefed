@@ -1,7 +1,10 @@
 import datetime
 
+from django.conf import settings
 from django.utils.timezone import utc
 from django.db import models
+
+from .managers import BannedWordManager
 
 
 # Available moderation status
@@ -46,6 +49,15 @@ class ModeratedContent(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
+        pre_moderate = getattr(settings, 'PRE_MODERATE_{0}'.format(self.__class__.__name__), False)
+        content_field = getattr(settings, 'PRE_MODERATE_{0}_content_field'.format(self.__class__.__name__), None)
+        if pre_moderate and content_field is not None:
+            self.moderation_reason = 'Automatic pre-moderation'
+            self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+            if self._passes_moderation(self.__getattribute__(content_field)):
+                self.moderation_status = MODERATION_STATUS_APPROVED
+            else:
+                self.moderation_status = MODERATION_STATUS_REJECTED
         return super(ModeratedContent, self).save(*args, **kwargs)
 
     def _moderate(self, status, reason=''):
@@ -55,13 +67,30 @@ class ModeratedContent(models.Model):
 
         self.save()
 
+    def _passes_moderation(self, content):
+        '''Returns True if content haven't any banned word, otherwise returns False
+        '''
+        banned_words = set(BannedWord.objects.get_banned_words())
+        words = set(content.split())
+        if len(words.intersection(banned_words)) > 0:
+            return False
+        return True
+
 
 class BannedWord(models.Model):
     '''This model represents a banned word'''
     word = models.CharField(max_length=100)
 
+    objects = BannedWordManager()
+
     class Meta:
         ordering = ['word']
+
+    @classmethod
+    def is_banned_word(cls, word):
+        '''Returns True if given word is a banned word
+        '''
+        return word in cls.objects.get_banned_words()
 
     def save(self, *args, **kwargs):
         num_words = len(self.word.split(' '))

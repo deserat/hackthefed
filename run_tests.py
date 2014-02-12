@@ -37,6 +37,8 @@ def setup_test_environment():
         'STATIC_URL': '/static/',
         'ROOT_URLCONF': '',
         'USE_TZ': True,
+        'PRE_MODERATE_Post': True,
+        'PRE_MODERATE_Post_content_field': 'content'
     }
     settings.configure(**settings_dict)
 
