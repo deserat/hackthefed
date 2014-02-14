@@ -111,6 +111,3 @@ class ModerationBundle(bundles.BlankBundle):
     banned_word = BannedWordBundle.as_subbundle(name='banned_word')
     banned_user = BannedUserBundle.as_subbundle(name='banned_user')
     flagged_user = FlaggedUserBundle.as_subbundle(name='flagged_user')
-
-
-site.register('moderation', ModerationBundle(name='moderation'), title='Moderation')
