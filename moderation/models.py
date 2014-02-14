@@ -61,7 +61,8 @@ class ModeratedContent(models.Model):
         return super(ModeratedContent, self).save(*args, **kwargs)
 
     def passes_moderation(self, content):
-        '''Returns True if content haven't any banned word, otherwise returns False
+        '''Returns True if content haven't any banned word, otherwise returns False.
+        Ovewrite this method to implement your own moderation rules
         '''
         banned_words = set(BannedWord.objects.get_banned_words())
         words = set(content.split())
