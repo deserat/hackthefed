@@ -54,20 +54,13 @@ class ModeratedContent(models.Model):
         if pre_moderate and content_field is not None:
             self.moderation_reason = 'Automatic pre-moderation'
             self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
-            if self._passes_moderation(self.__getattribute__(content_field)):
+            if self.passes_moderation(self.__getattribute__(content_field)):
                 self.moderation_status = MODERATION_STATUS_APPROVED
             else:
                 self.moderation_status = MODERATION_STATUS_REJECTED
         return super(ModeratedContent, self).save(*args, **kwargs)
 
-    def _moderate(self, status, reason=''):
-        self.moderation_status = status
-        self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
-        self.moderation_reason = reason
-
-        self.save()
-
-    def _passes_moderation(self, content):
+    def passes_moderation(self, content):
         '''Returns True if content haven't any banned word, otherwise returns False
         '''
         banned_words = set(BannedWord.objects.get_banned_words())
@@ -75,6 +68,13 @@ class ModeratedContent(models.Model):
         if len(words.intersection(banned_words)) > 0:
             return False
         return True
+
+    def _moderate(self, status, reason=''):
+        self.moderation_status = status
+        self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        self.moderation_reason = reason
+
+        self.save()
 
 
 class BannedWord(models.Model):
