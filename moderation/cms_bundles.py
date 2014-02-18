@@ -125,9 +125,6 @@ class ModerationFilterForm(BaseFilterForm):
         super(ModerationFilterForm, self).__init__(*args, **kwargs)
         self.search_fields = ('moderation_status', )
 
-    # class Meta:
-    #     model = BannedWord
-
 
 class ApproveAction(ActionView):
     confirmation_message = 'This will approve these records:'
@@ -196,26 +193,6 @@ class ModerationBundle(bundles.Bundle):
 
     class Meta:
         action_views = ('approve', 'reject', )
-        model = BannedWord
-
-
-class ModerationBundleMixin(object):
-    add = None
-    delete = None
-    approve = ApproveAction()
-    reject = RejectAction()
-
-    def render_moderation_times_moderated(self):
-        return self.moderation_times_moderated
-    render_moderation_times_moderated.short_description = 'Times moderated'
-
-    def render_moderation_times_flagged(self):
-        return self.moderation_times_flagged
-    render_moderation_times_flagged.short_description = 'Times flagged'
-
-    def render_moderation_status(self):
-        return self.get_moderation_status_display()
-    render_moderation_status.short_description = 'Moderation status'
 
 
 #---------------------------
