@@ -118,46 +118,49 @@ class FlaggedUserBundle(bundles.Bundle):
 #---------------------------
 
 
-class ModerationFilterForm(forms.BaseFilterForm):
-    model = 'Your model'
+class ModerationFilterForm(BaseFilterForm):
     moderation_status = forms.ChoiceField(choices=MODERATION_STATUS, required=False)
 
     def __init__(self, *args, **kwargs):
         super(ModerationFilterForm, self).__init__(*args, **kwargs)
         self.search_fields = ('moderation_status', )
 
-    class Meta:
-        model = 'Your model'
+    # class Meta:
+    #     model = BannedWord
 
 
 class ApproveAction(ActionView):
-    confirmation_message = 'This will approve these posts:'
-    short_description = 'Approve posts'
+    confirmation_message = 'This will approve these records:'
+    short_description = 'Approve records'
     action_name = 'Approve'
 
     def process_action(self, request, queryset):
         count = queryset.update(moderation_status=MODERATION_STATUS_APPROVED)
         url = self.get_done_url()
-        msg = self.write_message(message="%s post/s approved/s." % count)
+        msg = self.write_message(message="%s records/s approved/s." % count)
         return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
 
 
 class RejectAction(ActionView):
-    confirmation_message = 'This will reject these posts:'
-    short_description = 'Reject posts'
+    confirmation_message = 'This will reject these records:'
+    short_description = 'Reject records'
     action_name = 'Reject'
 
     def process_action(self, request, queryset):
         count = queryset.update(moderation_status=MODERATION_STATUS_REJECTED)
         url = self.get_done_url()
-        msg = self.write_message(message="%s post/s rejected/s." % count)
+        msg = self.write_message(message="%s record/s rejected/s." % count)
         return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
 
 
 class ModerationListView(views.ListView):
+    def __init__(self, *args, **kwargs):
+        super(ModerationListView, self).__init__(*args, **kwargs)
+        if 'model' in kwargs:
+            self.model = kwargs['model']
+
     def get_queryset(self):
-        model = 'Your model'
-        self.queryset = model.objects.all()
+        self.queryset = self.model.objects.all()
         return super(ModerationListView, self).get_queryset()
 
 
@@ -181,16 +184,39 @@ class ModerationBundle(bundles.Bundle):
         return self.get_moderation_status_display()
     render_moderation_status.short_description = 'Moderation status'
 
+    display_fields = (render_moderation_times_moderated,
+                      render_moderation_times_flagged,
+                      render_moderation_status, )
+
     main = ModerationListView(
-        display_fields=('title', 'date', render_moderation_times_moderated,
-                        render_moderation_times_flagged, render_moderation_status),
+        display_fields=display_fields,
         paginate_by=30,
         filter_form=ModerationFilterForm,
     )
 
     class Meta:
         action_views = ('approve', 'reject', )
-        model = 'Your model'
+        model = BannedWord
+
+
+class ModerationBundleMixin(object):
+    add = None
+    delete = None
+    approve = ApproveAction()
+    reject = RejectAction()
+
+    def render_moderation_times_moderated(self):
+        return self.moderation_times_moderated
+    render_moderation_times_moderated.short_description = 'Times moderated'
+
+    def render_moderation_times_flagged(self):
+        return self.moderation_times_flagged
+    render_moderation_times_flagged.short_description = 'Times flagged'
+
+    def render_moderation_status(self):
+        return self.get_moderation_status_display()
+    render_moderation_status.short_description = 'Moderation status'
+
 
 #---------------------------
 # Main moderation bundle
