@@ -125,6 +125,33 @@ wrapper *bundles* in your application. For example, using a *Comment*::
 The *display_fields* attribute indicates the fields you want to include in the
 main list displayed by the *bundle*.
 
+If you want to get a complete *bundle* for moderation, you can write some code
+like the following one::
+
+  class ModerationBundleBlog(ModerationMainBundle):
+      dashboard = (
+          ('banned_word', ),
+          ('banned_user', ),
+          ('flagged_user', ),
+          ('post_moderation', 'Posts'),
+          ('comment_moderation', 'Comments'),
+      )
+
+      post_moderation = PostModerationBundle.as_subbundle(name='post_moderation')
+      comment_moderation = CommentModerationBundle.as_subbundle(name='comment_moderation')
+
+
+  site.register('blog', BlogBundle(name='posts'), order=1)
+  site.register('moderation', ModerationBundleBlog(name='moderation'), title='Moderation', order=3)
+
+Basically, *moderation* application provides the following classes for write your
+own bundles:
+
+* *ModerationFilterForm*
+* *ModerationBundle*
+* *ModerationBundleBlog*
+* *ModerationMainBundle*
+
 Tests
 =====
 
