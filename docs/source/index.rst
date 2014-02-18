@@ -95,6 +95,36 @@ command line or from *cron* command:
 * *delete_rejected_content*: Deletes those objects of given models marked as *rejected* in the moderation queue.
 * *approve_content*: Approves all pending content of given models in moderation queue.
 
+Scarlet
+========
+
+You can use *moderation* application with *Scarlet CMS*. *moderation*
+includes some *bundles* that you can use with your models. These *bundles* provide
+two bulk actions: **approve** and **reject**.
+
+If you want your models use *moderation* bundles, you'll need to write additional
+wrapper *bundles* in your application. For example, using a *Comment*::
+
+  class CommentModerationFilterBundle(ModerationFilterForm):
+      class Meta:
+          model = Comment
+
+
+  class CommentModerationBundle(ModerationBundle):
+      display_fields = ('name', 'created', 'public', 'post') + ModerationBundle.display_fields
+
+      main = ModerationListView(
+          display_fields=display_fields,
+          filter_form=CommentModerationFilterBundle,
+          model=Comment,
+      )
+
+      class Meta:
+        model = Comment
+
+The *display_fields* attribute indicates the fields you want to include in the
+main list displayed by the *bundle*.
+
 Tests
 =====
 
