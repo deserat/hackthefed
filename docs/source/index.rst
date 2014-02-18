@@ -140,11 +140,9 @@ like the following one::
       post_moderation = PostModerationBundle.as_subbundle(name='post_moderation')
       comment_moderation = CommentModerationBundle.as_subbundle(name='comment_moderation')
 
+  site.register('moderation', ModerationBundleBlog(name='moderation'), title='Moderation')
 
-  site.register('blog', BlogBundle(name='posts'), order=1)
-  site.register('moderation', ModerationBundleBlog(name='moderation'), title='Moderation', order=3)
-
-Basically, *moderation* application provides the following classes for write your
+Basically, *moderation* application provides the following classes for writing your
 own bundles:
 
 * *ModerationFilterForm*
