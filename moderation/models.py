@@ -108,8 +108,8 @@ class BannedUser(models.Model):
     poster_sn = models.TextField()
     poster_id = models.TextField(blank=True, help_text='Required for some networks such as FB and Instagram')
     source = models.CharField(max_length=255, db_index=True)
-    times_moderated = models.SmallIntegerField(default=0)
-    last_moderated_date = models.DateTimeField()
+    times_banned = models.SmallIntegerField(default=0)
+    last_banned_date = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         self.last_moderated_date = datetime.datetime.now()
@@ -124,6 +124,7 @@ class FlaggedUser(models.Model):
     poster_sn = models.TextField()
     poster_id = models.TextField(blank=True, help_text='Required for some networks such as FB and Instagram')
     # User who flags another one
+    who_flags = models.TextField(blank=True)
     source = models.CharField(max_length=255, db_index=True)
     times_flagged = models.SmallIntegerField(default=0)
     last_flagged_date = models.DateTimeField()
