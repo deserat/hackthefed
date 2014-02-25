@@ -95,7 +95,7 @@ class BannedWord(models.Model):
     def is_banned_word(cls, word):
         '''Returns True if given word is a banned word
         '''
-        return word in cls.get_banned_words(cls)
+        return word in cls.get_banned_words()
 
     def save(self, *args, **kwargs):
         num_words = len(self.word.split(' '))
