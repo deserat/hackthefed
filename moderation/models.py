@@ -88,10 +88,14 @@ class BannedWord(models.Model):
         ordering = ['word']
 
     @classmethod
+    def get_banned_words(cls):
+        return set(cls.objects.values_list('word', flat=True))
+
+    @classmethod
     def is_banned_word(cls, word):
         '''Returns True if given word is a banned word
         '''
-        return word in cls.objects.get_banned_words()
+        return word in cls.get_banned_words(cls)
 
     def save(self, *args, **kwargs):
         num_words = len(self.word.split(' '))
