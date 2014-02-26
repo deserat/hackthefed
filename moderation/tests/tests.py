@@ -73,14 +73,16 @@ class ModerationTestCase(TestCase):
         self.assertEquals(self.comment.moderation_times_flagged, 1)
         self.assertIsNotNone(self.comment.moderation_last_flagged_date)
 
-    def test_pre_moderation(self):
+    def test_pre_moderation_approve(self):
         settings.PRE_MODERATE_Post_content_field = 'content'
         settings.PRE_MODERATE_Post = True
         self.post = PostFactory.create()
         self.assertEquals(self.post.moderation_status, MODERATION_STATUS_APPROVED)
-        # Replaciong valid content to banned content
-        self.post.content = self.banned_content
-        self.post.save()
+
+    def test_pre_moderation_reject(self):
+        settings.PRE_MODERATE_Post = True
+        settings.PRE_MODERATE_Post_content_field = 'content'
+        self.post = PostFactory.create(content=self.banned_content)
         self.assertEquals(self.post.moderation_status, MODERATION_STATUS_REJECTED)
 
 
