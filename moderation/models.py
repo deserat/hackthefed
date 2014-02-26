@@ -139,3 +139,6 @@ class FlaggedUser(models.Model):
 
     def __unicode__(self):
         return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
+
+
+banned_words = BannedWord.get_banned_words()

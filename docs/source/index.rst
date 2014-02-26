@@ -70,7 +70,7 @@ properties (model class name and field with content to be moderated) in your
 
 You can use a simple list (Python *set*) with all banned words, which will be
 created when application starts. The variable resides on the
-**moderation/__init__.py** file and it is called *banned_words**.
+**moderation/models.py** file and it is called *banned_words**.
 
 Actions
 =======
