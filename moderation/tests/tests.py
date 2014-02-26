@@ -53,41 +53,41 @@ class ModerationTestCase(TestCase):
         self.banned_word_3 = BannedWordFactory.create(word='amcik')
 
     def test_approve(self):
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
-        self.assertIsNone(self.comment.moderation_last_date)
+        self.assertEquals(self.comment.m_status, MODERATION_STATUS_PENDING)
+        self.assertIsNone(self.comment.m_last_date)
         self.comment.approve()
         comment = Comment.objects.get(id=1)
-        self.assertEquals(comment.moderation_status, MODERATION_STATUS_APPROVED)
-        self.assertIsNotNone(comment.moderation_last_date)
+        self.assertEquals(comment.m_status, MODERATION_STATUS_APPROVED)
+        self.assertIsNotNone(comment.m_last_date)
 
     def test_reject(self):
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
-        self.assertIsNone(self.comment.moderation_last_date)
+        self.assertEquals(self.comment.m_status, MODERATION_STATUS_PENDING)
+        self.assertIsNone(self.comment.m_last_date)
         self.comment.reject()
         comment = Comment.objects.get(id=1)
-        self.assertEquals(comment.moderation_status, MODERATION_STATUS_REJECTED)
-        self.assertIsNotNone(comment.moderation_last_date)
+        self.assertEquals(comment.m_status, MODERATION_STATUS_REJECTED)
+        self.assertIsNotNone(comment.m_last_date)
 
     def test_flag(self):
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
-        self.assertIsNone(self.comment.moderation_last_flagged_date)
+        self.assertEquals(self.comment.m_status, MODERATION_STATUS_PENDING)
+        self.assertIsNone(self.comment.m_last_flagged_date)
         self.comment.flag()
         # Object has not been saved by flag()
         comment = Comment.objects.get(id=1)
-        self.assertEquals(comment.moderation_times_flagged, 1)
-        self.assertIsNotNone(comment.moderation_last_flagged_date)
+        self.assertEquals(comment.m_times_flagged, 1)
+        self.assertIsNotNone(comment.m_last_flagged_date)
 
     def test_pre_moderation_approve(self):
         settings.PRE_MODERATE_Post_content_field = 'content'
         settings.PRE_MODERATE_Post = True
         self.post = PostFactory.create()
-        self.assertEquals(self.post.moderation_status, MODERATION_STATUS_APPROVED)
+        self.assertEquals(self.post.m_status, MODERATION_STATUS_APPROVED)
 
     def test_pre_moderation_reject(self):
         settings.PRE_MODERATE_Post = True
         settings.PRE_MODERATE_Post_content_field = 'content'
         self.post = PostFactory.create(content=self.banned_content)
-        self.assertEquals(self.post.moderation_status, MODERATION_STATUS_REJECTED)
+        self.assertEquals(self.post.m_status, MODERATION_STATUS_REJECTED)
 
 
 class ModerationCommands(TestCase):
@@ -97,15 +97,15 @@ class ModerationCommands(TestCase):
         self.comment = CommentFactory.create()
 
     def test_approve_content(self):
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
+        self.assertEquals(self.comment.m_status, MODERATION_STATUS_PENDING)
         call_command('approve_content', 'tests.Comment')
         comment = Comment.objects.all()[0]
-        self.assertEquals(comment.moderation_status, MODERATION_STATUS_APPROVED)
+        self.assertEquals(comment.m_status, MODERATION_STATUS_APPROVED)
 
     def test_delete_rejected_content(self):
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
+        self.assertEquals(self.comment.m_status, MODERATION_STATUS_PENDING)
         self.comment.reject()
         comment = Comment.objects.get(id=1)
-        self.assertEquals(comment.moderation_status, MODERATION_STATUS_REJECTED)
+        self.assertEquals(comment.m_status, MODERATION_STATUS_REJECTED)
         call_command('delete_rejected_content', 'tests.Comment', no_confirmation=True)
         self.assertEquals(Comment.objects.all().count(), 0)

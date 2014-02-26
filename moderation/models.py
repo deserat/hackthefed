@@ -25,13 +25,13 @@ class ModerationException(Exception):
 
 
 class ModeratedContent(models.Model):
-    moderation_status = models.SmallIntegerField(choices=MODERATION_STATUS,
-                                                 default=MODERATION_STATUS_PENDING)
-    moderation_reason = models.TextField(blank=True)
-    moderation_last_date = models.DateTimeField(blank=True, null=True)
-    moderation_times_moderated = models.SmallIntegerField(default=0)
-    moderation_times_flagged = models.SmallIntegerField(default=0)
-    moderation_last_flagged_date = models.DateTimeField(blank=True, null=True)
+    m_status = models.SmallIntegerField(choices=MODERATION_STATUS,
+                                        default=MODERATION_STATUS_PENDING)
+    m_reason = models.TextField(blank=True)
+    m_last_date = models.DateTimeField(blank=True, null=True)
+    m_times_moderated = models.SmallIntegerField(default=0)
+    m_times_flagged = models.SmallIntegerField(default=0)
+    m_last_flagged_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -44,20 +44,22 @@ class ModeratedContent(models.Model):
 
     def flag(self):
         self.__class__.objects.filter(id=self.id).update(
-            moderation_times_flagged=models.F('moderation_times_flagged') + 1,
-            moderation_last_flagged_date=datetime.datetime.utcnow().replace(tzinfo=utc))
+            m_times_flagged=models.F('m_times_flagged') + 1,
+            m_last_flagged_date=datetime.datetime.utcnow().replace(tzinfo=utc))
 
     def save(self, *args, **kwargs):
-        if self.moderation_status == MODERATION_STATUS_PENDING:
-            pre_moderate = getattr(settings, 'PRE_MODERATE_{0}'.format(self.__class__.__name__), False)
-            content_field = getattr(settings, 'PRE_MODERATE_{0}_content_field'.format(self.__class__.__name__), None)
+        if self.m_status == MODERATION_STATUS_PENDING:
+            pre_moderate = getattr(settings,
+                                   'PRE_MODERATE_{0}'.format(self.__class__.__name__), False)
+            content_field = getattr(settings,
+                                    'PRE_MODERATE_{0}_content_field'.format(self.__class__.__name__), None)
             if pre_moderate and content_field is not None:
-                self.moderation_reason = 'Automatic pre-moderation'
-                self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+                self.m_reason = 'Automatic pre-moderation'
+                self.m_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
                 if self.passes_moderation(self.__getattribute__(content_field)):
-                    self.moderation_status = MODERATION_STATUS_APPROVED
+                    self.m_status = MODERATION_STATUS_APPROVED
                 else:
-                    self.moderation_status = MODERATION_STATUS_REJECTED
+                    self.m_status = MODERATION_STATUS_REJECTED
         return super(ModeratedContent, self).save(*args, **kwargs)
 
     def passes_moderation(self, content):
@@ -72,9 +74,9 @@ class ModeratedContent(models.Model):
 
     def _moderate(self, status, reason=''):
         self.__class__.objects.filter(id=self.id).update(
-            moderation_status=status,
-            moderation_last_date=datetime.datetime.utcnow().replace(tzinfo=utc),
-            moderation_reason=reason)
+            m_status=status,
+            m_last_date=datetime.datetime.utcnow().replace(tzinfo=utc),
+            m_reason=reason)
 
 
 class BannedWord(models.Model):

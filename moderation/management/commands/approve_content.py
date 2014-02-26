@@ -35,9 +35,9 @@ class Command(BaseCommand):
             model = get_model(app_name, model_name)
             if model is None:
                 raise CommandError('Cannot import given model: {0}'.format(arg))
-            pending_records = model.objects.filter(moderation_status=MODERATION_STATUS_PENDING)
+            pending_records = model.objects.filter(m_status=MODERATION_STATUS_PENDING)
             if dry_run:
                 logger.info('{0} are going to be approved for {1}'.format(pending_records.count(), arg))
             else:
-                pending_records.update(moderation_status=MODERATION_STATUS_APPROVED)
+                pending_records.update(m_status=MODERATION_STATUS_APPROVED)
                 logger.info('{0} has been updated for {1}'.format(pending_records.count(), arg))

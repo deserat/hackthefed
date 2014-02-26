@@ -48,7 +48,7 @@ class Command(BaseCommand):
             model = get_model(app_name, model_name)
             if model is None:
                 raise CommandError('Cannot import given model: {0}'.format(arg))
-            rejected_records = model.objects.filter(moderation_status=MODERATION_STATUS_REJECTED)
+            rejected_records = model.objects.filter(m_status=MODERATION_STATUS_REJECTED)
             if dry_run:
                 logger.info('{0} are going to be deleted for {1}'.format(rejected_records.count(), arg))
             else:
