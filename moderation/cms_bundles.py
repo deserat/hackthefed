@@ -119,11 +119,11 @@ class FlaggedUserBundle(bundles.Bundle):
 
 
 class ModerationFilterForm(BaseFilterForm):
-    moderation_status = forms.ChoiceField(choices=MODERATION_STATUS, required=False)
+    m_status = forms.ChoiceField(choices=MODERATION_STATUS, required=False, label=u'Status')
 
     def __init__(self, *args, **kwargs):
         super(ModerationFilterForm, self).__init__(*args, **kwargs)
-        self.search_fields = ('moderation_status', )
+        self.search_fields = ('m_status', )
 
 
 class ApproveAction(ActionView):
@@ -132,7 +132,7 @@ class ApproveAction(ActionView):
     action_name = 'Approve'
 
     def process_action(self, request, queryset):
-        count = queryset.update(moderation_status=MODERATION_STATUS_APPROVED)
+        count = queryset.update(m_status=MODERATION_STATUS_APPROVED)
         url = self.get_done_url()
         msg = self.write_message(message="%s records/s approved/s." % count)
         return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
@@ -144,7 +144,7 @@ class RejectAction(ActionView):
     action_name = 'Reject'
 
     def process_action(self, request, queryset):
-        count = queryset.update(moderation_status=MODERATION_STATUS_REJECTED)
+        count = queryset.update(m_status=MODERATION_STATUS_REJECTED)
         url = self.get_done_url()
         msg = self.write_message(message="%s record/s rejected/s." % count)
         return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
@@ -169,21 +169,21 @@ class ModerationBundle(bundles.Bundle):
     approve = ApproveAction()
     reject = RejectAction()
 
-    def render_moderation_times_moderated(self):
-        return self.moderation_times_moderated
-    render_moderation_times_moderated.short_description = 'Times moderated'
+    def render_m_times_moderated(self):
+        return self.m_times_moderated
+    render_m_times_moderated.short_description = 'Times moderated'
 
-    def render_moderation_times_flagged(self):
-        return self.moderation_times_flagged
-    render_moderation_times_flagged.short_description = 'Times flagged'
+    def m_times_flagged(self):
+        return self.m_times_flagged
+    m_times_flagged.short_description = 'Times flagged'
 
-    def render_moderation_status(self):
-        return self.get_moderation_status_display()
-    render_moderation_status.short_description = 'Moderation status'
+    def render_m_status(self):
+        return self.get_m_status_display()
+    render_m_status.short_description = 'Moderation status'
 
-    display_fields = (render_moderation_times_moderated,
-                      render_moderation_times_flagged,
-                      render_moderation_status, )
+    display_fields = (render_m_times_moderated,
+                      m_times_flagged,
+                      render_m_status, )
 
     main = ModerationListView(
         display_fields=display_fields,
