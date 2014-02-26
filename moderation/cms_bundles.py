@@ -96,16 +96,16 @@ class FlaggedUserBundle(bundles.Bundle):
 
     add = views.FormView(
         form_class=SourceForm,
-        fieldsets=((None, {'fields': ('poster_sn', 'poster_id', 'source', 'who_flags')}),)
+        fieldsets=((None, {'fields': ('poster_sn', 'poster_id', 'source', )}),)
     )
 
     edit = views.FormView(
         form_class=SourceForm,
-        fieldsets=((None, {'fields': ('poster_sn', 'poster_id', 'source', 'who_flags')}),)
+        fieldsets=((None, {'fields': ('poster_sn', 'poster_id', 'source', )}),)
     )
 
     main = FlaggedUserListView(
-        display_fields=('poster_sn', 'source', 'when_flagged', 'who_flags'),
+        display_fields=('poster_sn', 'source', 'when_flagged', ),
         paginate_by=30,
     )
 
