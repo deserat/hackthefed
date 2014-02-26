@@ -68,6 +68,10 @@ properties (model class name and field with content to be moderated) in your
     PRE_MODERATE_Comment = True
     PRE_MODERATE_Comment_content_field = 'content'
 
+You can use a simple list (Python *set*) with all banned words, which will be
+created when application starts. The variable resides on the
+**moderation/__init__.py** file and it is called *banned_words**.
+
 Actions
 =======
 
