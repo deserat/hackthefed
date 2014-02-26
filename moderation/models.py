@@ -49,15 +49,16 @@ class ModeratedContent(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
-        pre_moderate = getattr(settings, 'PRE_MODERATE_{0}'.format(self.__class__.__name__), False)
-        content_field = getattr(settings, 'PRE_MODERATE_{0}_content_field'.format(self.__class__.__name__), None)
-        if pre_moderate and content_field is not None:
-            self.moderation_reason = 'Automatic pre-moderation'
-            self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
-            if self.passes_moderation(self.__getattribute__(content_field)):
-                self.moderation_status = MODERATION_STATUS_APPROVED
-            else:
-                self.moderation_status = MODERATION_STATUS_REJECTED
+        if self.moderation_status == MODERATION_STATUS_PENDING:
+            pre_moderate = getattr(settings, 'PRE_MODERATE_{0}'.format(self.__class__.__name__), False)
+            content_field = getattr(settings, 'PRE_MODERATE_{0}_content_field'.format(self.__class__.__name__), None)
+            if pre_moderate and content_field is not None:
+                self.moderation_reason = 'Automatic pre-moderation'
+                self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+                if self.passes_moderation(self.__getattribute__(content_field)):
+                    self.moderation_status = MODERATION_STATUS_APPROVED
+                else:
+                    self.moderation_status = MODERATION_STATUS_REJECTED
         return super(ModeratedContent, self).save(*args, **kwargs)
 
     def passes_moderation(self, content):
@@ -111,7 +112,7 @@ class BannedUser(models.Model):
     '''This model represents a banned user'''
     poster_sn = models.TextField()
     poster_id = models.TextField(blank=True, help_text='Required for some networks such as FB and Instagram')
-    source = models.CharField(max_length=255, db_index=True)
+    source = models.CharField(max_length=255, blank=True)
     times_banned = models.SmallIntegerField(default=0)
     last_banned_date = models.DateTimeField()
 
@@ -127,9 +128,7 @@ class FlaggedUser(models.Model):
     '''This model represents a user that has been flagged by another user'''
     poster_sn = models.TextField()
     poster_id = models.TextField(blank=True, help_text='Required for some networks such as FB and Instagram')
-    # User who flags another one
-    who_flags = models.TextField(blank=True)
-    source = models.CharField(max_length=255, db_index=True)
+    source = models.CharField(max_length=255, blank=True)
     times_flagged = models.SmallIntegerField(default=0)
     last_flagged_date = models.DateTimeField()
 
