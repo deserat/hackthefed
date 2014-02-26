@@ -71,11 +71,10 @@ class ModeratedContent(models.Model):
         return True
 
     def _moderate(self, status, reason=''):
-        self.moderation_status = status
-        self.moderation_last_date = datetime.datetime.utcnow().replace(tzinfo=utc)
-        self.moderation_reason = reason
-
-        self.save()
+        self.__class__.objects.filter(id=self.id).update(
+            moderation_status=status,
+            moderation_last_date=datetime.datetime.utcnow().replace(tzinfo=utc),
+            moderation_reason=reason)
 
 
 class BannedWord(models.Model):

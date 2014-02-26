@@ -56,15 +56,17 @@ class ModerationTestCase(TestCase):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.assertIsNone(self.comment.moderation_last_date)
         self.comment.approve()
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_APPROVED)
-        self.assertIsNotNone(self.comment.moderation_last_date)
+        comment = Comment.objects.get(id=1)
+        self.assertEquals(comment.moderation_status, MODERATION_STATUS_APPROVED)
+        self.assertIsNotNone(comment.moderation_last_date)
 
     def test_reject(self):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.assertIsNone(self.comment.moderation_last_date)
         self.comment.reject()
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_REJECTED)
-        self.assertIsNotNone(self.comment.moderation_last_date)
+        comment = Comment.objects.get(id=1)
+        self.assertEquals(comment.moderation_status, MODERATION_STATUS_REJECTED)
+        self.assertIsNotNone(comment.moderation_last_date)
 
     def test_flag(self):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
@@ -103,6 +105,7 @@ class ModerationCommands(TestCase):
     def test_delete_rejected_content(self):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.comment.reject()
-        self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_REJECTED)
+        comment = Comment.objects.get(id=1)
+        self.assertEquals(comment.moderation_status, MODERATION_STATUS_REJECTED)
         call_command('delete_rejected_content', 'tests.Comment', no_confirmation=True)
         self.assertEquals(Comment.objects.all().count(), 0)
