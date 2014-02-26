@@ -43,10 +43,9 @@ class ModeratedContent(models.Model):
         self._moderate(MODERATION_STATUS_REJECTED, reason)
 
     def flag(self):
-        self.moderation_times_flagged += 1
-        self.moderation_last_flagged_date = datetime.datetime.utcnow().replace(tzinfo=utc)
-
-        self.save()
+        self.__class__.objects.filter(id=self.id).update(
+            moderation_times_flagged=models.F('moderation_times_flagged') + 1,
+            moderation_last_flagged_date=datetime.datetime.utcnow().replace(tzinfo=utc))
 
     def save(self, *args, **kwargs):
         if self.moderation_status == MODERATION_STATUS_PENDING:
@@ -117,11 +116,11 @@ class BannedUser(models.Model):
     last_banned_date = models.DateTimeField()
 
     def save(self, *args, **kwargs):
-        self.last_moderated_date = datetime.datetime.now()
+        self.last_banned_date = datetime.datetime.now()
         return super(BannedUser, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
+        return '%s' % (self.poster_id, )
 
 
 class FlaggedUser(models.Model):
@@ -137,7 +136,7 @@ class FlaggedUser(models.Model):
         return super(FlaggedUser, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return '%s: %s (%s)' % (self.source, self.poster_sn, self.poster_id)
+        return '%s' % (self.poster_id, )
 
 
 banned_words = BannedWord.get_banned_words()

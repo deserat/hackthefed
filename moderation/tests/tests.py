@@ -70,8 +70,10 @@ class ModerationTestCase(TestCase):
         self.assertEquals(self.comment.moderation_status, MODERATION_STATUS_PENDING)
         self.assertIsNone(self.comment.moderation_last_flagged_date)
         self.comment.flag()
-        self.assertEquals(self.comment.moderation_times_flagged, 1)
-        self.assertIsNotNone(self.comment.moderation_last_flagged_date)
+        # Object has not been saved by flag()
+        comment = Comment.objects.get(id=1)
+        self.assertEquals(comment.moderation_times_flagged, 1)
+        self.assertIsNotNone(comment.moderation_last_flagged_date)
 
     def test_pre_moderation_approve(self):
         settings.PRE_MODERATE_Post_content_field = 'content'
