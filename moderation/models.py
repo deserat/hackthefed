@@ -116,10 +116,6 @@ class BannedUser(models.Model):
     times_banned = models.SmallIntegerField(default=0)
     last_banned_date = models.DateTimeField()
 
-    def save(self, *args, **kwargs):
-        self.last_banned_date = datetime.datetime.now()
-        return super(BannedUser, self).save(*args, **kwargs)
-
     def __unicode__(self):
         return '%s' % (self.poster_id, )
 
@@ -131,10 +127,6 @@ class FlaggedUser(models.Model):
     source = models.CharField(max_length=255, blank=True)
     times_flagged = models.SmallIntegerField(default=0)
     last_flagged_date = models.DateTimeField()
-
-    def save(self, *args, **kwargs):
-        self.last_flagged_date = datetime.datetime.now()
-        return super(FlaggedUser, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return '%s' % (self.poster_id, )
