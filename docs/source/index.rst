@@ -90,6 +90,16 @@ three possible values:
 * Pending
 * Rejected
 
+How to flag/unflag users
+========================
+
+If you need to flag/unflag a specific user, you can execute following methods::
+
+  from moderation import flag_user, unflag_user
+
+  flag_user('username 1')
+  unflag_user('username 2')
+
 Available commands
 ==================
 
