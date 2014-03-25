@@ -24,14 +24,30 @@ class ModerationException(Exception):
     pass
 
 
+FLAG_ACTION = 'Flag'
+UNFLAG_ACTION = 'Unflag'
+
+FLAGS_ACTIONS = (
+    (FLAG_ACTION, 'Flag'),
+    (UNFLAG_ACTION, 'Unflag'),
+)
+
+
+class FlaggedContent(models.Model):
+    action = models.CharField(max_length=10, choices=FLAGS_ACTIONS)
+    content_pk = models.IntegerField()
+    content_class = models.CharField(max_length=255)
+    when = models.DateTimeField(auto_now_add=True)
+    who = models.CharField(max_length=10, blank=True)
+
+
 class ModeratedContent(models.Model):
     m_status = models.SmallIntegerField(choices=MODERATION_STATUS,
                                         default=MODERATION_STATUS_PENDING)
     m_reason = models.TextField(blank=True)
     m_last_date = models.DateTimeField(blank=True, null=True)
     m_times_moderated = models.SmallIntegerField(default=0)
-    m_times_flagged = models.SmallIntegerField(default=0)
-    m_last_flagged_date = models.DateTimeField(blank=True, null=True)
+    is_flagged = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
@@ -42,10 +58,11 @@ class ModeratedContent(models.Model):
     def reject(self, reason=''):
         self._moderate(MODERATION_STATUS_REJECTED, reason)
 
-    def flag(self):
-        self.__class__.objects.filter(id=self.id).update(
-            m_times_flagged=models.F('m_times_flagged') + 1,
-            m_last_flagged_date=datetime.datetime.utcnow().replace(tzinfo=utc))
+    def flag(self, who):
+        self._flags(FLAG_ACTION, who, is_flagged=True)
+
+    def unflag(self, who):
+        self._flags(UNFLAG_ACTION, who, is_flagged=False)
 
     def save(self, *args, **kwargs):
         if self.m_status == MODERATION_STATUS_PENDING:
@@ -77,6 +94,12 @@ class ModeratedContent(models.Model):
             m_status=status,
             m_last_date=datetime.datetime.utcnow().replace(tzinfo=utc),
             m_reason=reason)
+
+    def _flags(self, action, who, is_flagged):
+        self.__class__.objects.filter(id=self.id).update(is_flagged=is_flagged)
+        FlaggedContent.objects.add(action=action, content_pk=self.id,
+                                   content_class=self.__class__.objects,
+                                   who=who)
 
 
 class BannedWord(models.Model):
