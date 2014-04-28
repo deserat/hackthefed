@@ -136,18 +136,18 @@ class ModerationAction(ActionView):
 
 
 class ApproveAction(ModerationAction):
-    confirmation_message = 'This will approve these feeds:'
-    short_description = 'Approve feeds'
+    confirmation_message = 'This will approve these records:'
+    short_description = 'Approve records'
     action_name = 'Approve'
-    final_message = 'feed/s has been approved.'
+    final_message = 'record/s have been approved.'
     status = MODERATION_STATUS_APPROVED
 
 
 class RejectAction(ModerationAction):
-    confirmation_message = 'This will reject these feeds:'
-    short_description = 'Reject feeds'
+    confirmation_message = 'This will reject these records:'
+    short_description = 'Reject records'
     action_name = 'Reject'
-    final_message = 'feed/s has been rejected.'
+    final_message = 'records/s have been rejected.'
     status = MODERATION_STATUS_REJECTED
 
 
