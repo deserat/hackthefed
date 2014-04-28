@@ -126,28 +126,29 @@ class ModerationFilterForm(BaseFilterForm):
         self.search_fields = ('m_status', )
 
 
-class ApproveAction(ActionView):
-    confirmation_message = 'This will approve these records:'
-    short_description = 'Approve records'
+class ModerationAction(ActionView):
+
+    def process_action(self, request, queryset):
+        count = queryset.update(moderation_status=self.status)
+        url = self.get_done_url()
+        msg = self.write_message(message='{0} {1}'.format(count, self.final_message))
+        return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
+
+
+class ApproveAction(ModerationAction):
+    confirmation_message = 'This will approve these feeds:'
+    short_description = 'Approve feeds'
     action_name = 'Approve'
-
-    def process_action(self, request, queryset):
-        count = queryset.update(m_status=MODERATION_STATUS_APPROVED)
-        url = self.get_done_url()
-        msg = self.write_message(message="%s records/s approved/s." % count)
-        return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
+    final_message = 'feed/s has been approved.'
+    status = MODERATION_STATUS_APPROVED
 
 
-class RejectAction(ActionView):
-    confirmation_message = 'This will reject these records:'
-    short_description = 'Reject records'
+class RejectAction(ModerationAction):
+    confirmation_message = 'This will reject these feeds:'
+    short_description = 'Reject feeds'
     action_name = 'Reject'
-
-    def process_action(self, request, queryset):
-        count = queryset.update(m_status=MODERATION_STATUS_REJECTED)
-        url = self.get_done_url()
-        msg = self.write_message(message="%s record/s rejected/s." % count)
-        return self.render(request, redirect_url=url, message=msg, collect_render_data=False)
+    final_message = 'feed/s has been rejected.'
+    status = MODERATION_STATUS_REJECTED
 
 
 class ModerationListView(views.ListView):
