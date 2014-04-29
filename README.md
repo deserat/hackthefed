@@ -6,6 +6,7 @@ This is an Django application for moderating polled content from social networks
 ## Dependencies
 
 * [Scarlet CMS](https://github.com/ff0000/scarlet)
+* redis==2.9.1
 
 
 ## Quick start
