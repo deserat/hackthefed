@@ -20,7 +20,6 @@ import json
 # Settings
 #
 
-
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "{0}/data/113/bills/sres/".format(APP_DIR)
 
@@ -132,7 +131,7 @@ for root, dirs, files in os.walk(DATA_DIR):
             else:
                 print "updateing congressman"
                 db.congressman.update(
-                    {"thomas_id": sponsor['thomas_id'] },
+                    {"thomas_id": cosponsor['thomas_id'] },
                     {
                         "$inc" : { "cosponsor_count" : 1},
                         "$push" : { "cosponsored_resolutions": 
@@ -143,12 +142,8 @@ for root, dirs, files in os.walk(DATA_DIR):
                         }
                     }
                 )
-                tmp = db.congressman.find_one({"thomas_id": sponsor['thomas_id']})
+                tmp = db.congressman.find_one({"thomas_id": cosponsor['thomas_id']})
                 print tmp["sponsor_count"]
-
-
-
-
 
 
 # bigram_counts = {}
