@@ -1,5 +1,9 @@
+#
+# Don't assume nothing smart from this file I'm just messing around with 
+# the data files and getting to know them. Anything of value will go 
+# elsewhere.
+# 
 
-# /projects/congress/83/bills/hr/hr5069/text-versions/enr
 
 import nltk
 from nltk import bigrams
