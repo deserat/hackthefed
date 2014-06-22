@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Monkey List</title>
+    </head>
+    <body>
+        <h2>Congressmen</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Bills Sponsored</th>
+                <th>Bills Cosponsored</th>
+            </tr> 
+        {% for c in congressmen %}
+            <tr>
+                <td>{{ c.name }}</td>
+                <td>{{ c.sponsor_count }}</td>
+                <td>{{ c.cosponsor_count }}</td>
+            </tr>
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        </table>
+        <h2>States</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Bills Sponsored</th>
+                <th>Bills Cosponsored</th>
+            </tr> 
+        {% for state in states %}
+            <tr>
+                <td>{{ state.name }}</td>
+                <td>{{ state.sponsor_count }}</td>
+                <td>{{ state.cosponsor_count }}</td>
+            </tr>
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        </table>
+    </body>
+</html>
