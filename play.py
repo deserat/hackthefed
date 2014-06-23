@@ -21,7 +21,7 @@ import json
 #
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = "{0}/data/113/bills/sres/".format(APP_DIR)
+DATA_DIR = "{0}/data/113/bills/".format(APP_DIR)
 
 
 db = pymongo.Connection("127.0.0.1", safe=True).congress
@@ -47,8 +47,6 @@ for root, dirs, files in os.walk(DATA_DIR):
         rez = json.loads( open(file_path, 'r').read() )
         
         sponsor = rez.get('sponsor', None)
-
-
 
         # Check if the bill has a sponsor if so give 'em credit
         if sponsor:
