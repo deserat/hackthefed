@@ -143,7 +143,7 @@ for root, dirs, files in os.walk(DATA_DIR):
                     }
                 )
                 tmp = db.congressman.find_one({"thomas_id": cosponsor['thomas_id']})
-                print tmp["sponsor_count"]
+                
 
 
 # bigram_counts = {}
