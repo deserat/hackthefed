@@ -14,10 +14,10 @@ app.config.update(dict(
 
 @app.route('/', methods=['GET'])
 def show_congressmen():
-    congressmen = db.congressman.find()
+    legislator = db.legislator.find()
     states = db.states.find()
 
-    return render_template('index.html', congressmen=congressmen,states=states)
+    return render_template('index.html', legislator=legislator,states=states)
 
 
 if __name__ == "__main__":

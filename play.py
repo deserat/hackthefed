@@ -21,7 +21,7 @@ import json
 #
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = "{0}/data/113/bills/".format(APP_DIR)
+DATA_DIR = "{0}/data/congress/113/bills/".format(APP_DIR)
 
 
 db = pymongo.Connection("127.0.0.1", safe=True).congress
@@ -48,52 +48,31 @@ for root, dirs, files in os.walk(DATA_DIR):
         
         sponsor = rez.get('sponsor', None)
 
+        print file_path
+
         # Check if the bill has a sponsor if so give 'em credit
         if sponsor:
-            
-            congressman = db.congressman.find_one({"thomas_id": sponsor['thomas_id']})
-
             db.states.update(
                 { "name" : sponsor['state'] },
                 { "$inc" : { "sponsor_count" : 1} },
                 True,
                 False
             )
-
-            if not congressman:
-                #  If the congressman doesn't exist we need to create them 
-                # Add this resolution to the sponsered resolutions sub doc
-                # incrment the sponsered count
-                print "inserting"
-
-                sponsor["sponsored_resolutions"] = [ 
-                    {
-                        "bill_id" : rez.get("bill_id", "NOID"),
-                        "title": "NOTITLE"
-                    }
-                ]
-
-                sponsor["sponsor_count"] = 1
-
-                id =  db.congressman.insert(sponsor)
-
-                print "Created congressman"
-            else:
-                print "updateing congressman"
-                db.congressman.update(
-                    {"thomas_id": sponsor['thomas_id'] },
-                    {
-                        "$inc" : { "sponsor_count" : 1},
-                        "$push" : { "sponsored_resolutions": 
-                            {
-                                "bill_id" : rez.get("bill_id", "NOID"),
-                                "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                            }
+            
+            print "updateing congressman"
+            db.legislator.update(
+                {"thomas_id": sponsor['thomas_id'] },
+                {
+                    "$inc" : { "sponsor_count" : 1},
+                    "$push" : { "sponsored_resolutions": 
+                        {
+                            "bill_id" : rez.get("bill_id", "NOID"),
+                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
                         }
                     }
-                )
-                tmp = db.congressman.find_one({"thomas_id": sponsor['thomas_id']})
-                print tmp["sponsor_count"]
+                }
+            )
+                
 
         # Loop through all the cosponsors of a bill and give them each credit for the bills
         # they cosponsor
@@ -107,40 +86,18 @@ for root, dirs, files in os.walk(DATA_DIR):
                 False
             )
 
-            congressman = db.congressman.find_one({"thomas_id": sponsor['thomas_id']})
-            if not congressman:
-                #  If the congressman doesn't exist we need to create them 
-                # Add this resolution to the sponsered resolutions sub doc
-                # incrment the sponsered count
-                print "inserting"
-
-                cosponsor["cosponsored_resolutions"] = [ 
-                    {
-                        "bill_id" : rez.get("bill_id", "NOID"),
-                        "title": "NOTITLE"
-                    }
-                ]
-
-                cosponsor["cosponsored_count"] = 1
-
-                id =  db.congressman.insert(cosponsor)
-
-                print "Created congressman"
-            else:
-                print "updateing congressman"
-                db.congressman.update(
-                    {"thomas_id": cosponsor['thomas_id'] },
-                    {
-                        "$inc" : { "cosponsor_count" : 1},
-                        "$push" : { "cosponsored_resolutions": 
-                            {
-                                "bill_id" : rez.get("bill_id", "NOID"),
-                                "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                            }
+            db.legislator.update(
+                {"thomas_id": cosponsor['thomas_id'] },
+                {
+                    "$inc" : { "cosponsor_count" : 1},
+                    "$push" : { "cosponsored_resolutions": 
+                        {
+                            "bill_id" : rez.get("bill_id", "NOID"),
+                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
                         }
                     }
-                )
-                tmp = db.congressman.find_one({"thomas_id": cosponsor['thomas_id']})
+                }
+            )
                 
 
 
