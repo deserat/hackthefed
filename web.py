@@ -2,7 +2,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 
 import pymongo
 
-db = pymongo.Connection("127.0.0.1", safe=True).congress
+db = pymongo.MongoClient("127.0.0.1", safe=True).congress
 
 app = Flask(__name__)
 

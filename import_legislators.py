@@ -3,20 +3,15 @@ import calendar
 import pymongo
 import bson
 import json
-
 import csv
-
-
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "{0}/data/congress-legislators/".format(APP_DIR)
 
-
-db = pymongo.Connection("127.0.0.1", safe=True).congress
+db = pymongo.MongoClient("127.0.0.1", safe=True).congress
 
 db.legislator.drop()
 db.create_collection("legislator")
-
 
 def process_legislators(legislators):
     headers = legislators.next()
@@ -33,8 +28,6 @@ def process_legislators(legislators):
             leg_dict[headers[i]] = leg[i]
 
         db.legislator.insert(leg_dict)
-
-        
 
 
 with open("{0}/legislators-historic.csv".format(DATA_DIR), 'rb') as csvfile:
