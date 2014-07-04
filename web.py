@@ -20,5 +20,12 @@ def show_congressmen():
     return render_template('index.html', legislator=legislator,states=states)
 
 
+@app.route('/committees', methods=['GET'])
+def committees():
+    committees = db.committee.find()
+
+    return render_template('committees.html', committees=committees)
+
+
 if __name__ == "__main__":
     app.run()

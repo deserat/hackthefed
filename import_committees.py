@@ -29,7 +29,7 @@ def process_committees(committees):
             db.committee.update(
                 {"thomas_id":c["thomas_id"]},
                 {
-                    "$push": { 
+                    "$addToSet": { 
                         "congresses": { "$each": congresses } ,
                         "names": { "$each": names } 
                     }
