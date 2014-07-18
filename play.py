@@ -33,6 +33,9 @@ db = pymongo.MongoClient("127.0.0.1", safe=True).congress
 
 db.states.drop()
 db.create_collection("states")
+db.subject.drop()
+db.create_collection("subject")
+
 
 
 # Loop over bills. Count and tally statistics on congressmen 
@@ -60,7 +63,9 @@ for root, dirs, files in os.walk(DATA_DIR):
             db.legislator.update(
                 {"thomas_id": sponsor['thomas_id'] },
                 {
-                    "$inc" : { "sponsor_count" : 1},
+                    "$inc" : { 
+                        "sponsor_count" : 1,
+                    },
                     "$push" : { "sponsored_resolutions": 
                         {
                             "bill_id" : rez.get("bill_id", "NOID"),
@@ -69,6 +74,46 @@ for root, dirs, files in os.walk(DATA_DIR):
                     }
                 }
             )
+
+
+            #print rez.get('subjects', None)
+            for subject in rez.get('subjects', None):
+                db.subject.update(
+                    {"name": subject},
+                    {
+                        "$inc": {
+                            "count": 1
+                        },
+                        "$push" : { "bills": 
+                        {
+                            "bill_id" : rez.get("bill_id", "NOID"),
+                            "type" : rez.get('bill_type',None),
+                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                        }
+                    }
+                    },
+                    True,
+                    False
+                )
+            #print rez.get('subjects_top_term', None)
+            if rez.get('subjects_top_term', None):
+                db.subject.update(
+                    {"name": subject},
+                    {
+                        "$inc": {
+                            "top_count": 1
+                        },
+                        "$push" : { "bills": 
+                        {
+                            "bill_id" : rez.get("bill_id", "NOID"),
+                            "type" : rez.get('bill_type',None),
+                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                        }
+                    }
+                    },
+                    True,
+                    False
+                )
                 
 
         # Loop through all the cosponsors of a bill and give them each credit for the bills

@@ -53,7 +53,6 @@ def process_committees(committees):
                 c['congresses'] = ["113"]
                 c['names'] = [{"113": c["name"]}]
             
-            print c
 
             db.committee.insert(c)
 

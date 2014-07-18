@@ -1,8 +1,13 @@
-<html>
-    <head>
-        <title>Monkey List</title>
-    </head>
-    <body>
+{% extends "base.html" %}
+
+{% block title %}:: Subjects :: {{subject.name}}{% endblock %}
+
+{% block seo %}
+    <meta keywords="Congress, Statistics, Subjects">
+    <meta description="{{ bill.title }}">
+{% endblock %}
+
+{% block content %}
         <h2>Congressmen</h2>
         <table>
             <tr>
@@ -10,11 +15,11 @@
                 <th>Bills Sponsored</th>
                 <th>Bills Cosponsored</th>
             </tr> 
-        {% for c in congressmen %}
+        {% for l in legislators %}
             <tr>
-                <td>{{ c.name }}</td>
-                <td>{{ c.sponsor_count }}</td>
-                <td>{{ c.cosponsor_count }}</td>
+                <td>{{ l.first_name }} {{ l.last_name }}</td>
+                <td>{{ l.sponsor_count }}</td>
+                <td>{{ l.cosponsor_count }}</td>
             </tr>
                 
         {% else %}
@@ -39,6 +44,4 @@
             <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
         {% endfor %}
         </table>
-    </body>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
-</html>
+{% endblock %}
