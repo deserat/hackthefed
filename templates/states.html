@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}:: States{% endblock %}
+
+{% block seo %}
+    <meta keywords="Congress, States">
+    <meta description="A list of States">
+{% endblock %}
+
+{% block content %}
+       <h2>States</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Bills Sponsored</th>
+                <th>Bills Cosponsored</th>
+            </tr> 
+        {% for state in states %}
+            <tr>
+                <td>{{ state.name }}</td>
+                <td>{{ state.sponsor_count }}</td>
+                <td>{{ state.cosponsor_count }}</td>
+            </tr>
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        </table>
+{% endblock %}

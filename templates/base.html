@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Congress {% block title %}{% endblock %}</title>
+        {% block seo %}
+            <meta keywords="Congressional Statistics">
+            <meta description="Quantifying Congressional Activity">
+        {% endblock %}
+        {% block social %}
+            <meta og:title="Congressional Statistics">
+            <meta og:description="Congressional Statistics">
+        {% endblock %}
+        <link href="/static/css/main.css" type="text/stylesheet">
+    </head>
+    <body>
+        {% block content %}
+        {% endblock %}
+    </body>
+<html>

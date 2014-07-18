@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}:: Committies{% endblock %}
+
+{% block seo %}
+    <meta keywords="Congress, Committies">
+    <meta description="A list of congressional committies">
+{% endblock %}
+
+{% block content %}
+        <h2>Commitiees</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</thM
+                <th>Congresses</th>
+                <th>Subcommittees</th>
+            </tr> 
+        {% for c in committees %}
+            <tr id="committee-{{c.thomas_id}}">
+                <td>{{ c.name }}</td>
+                <td>{{ c.type }}</td>
+                <td>
+                    {% for congress in  c.congresses  %}
+                        {{ congress }},
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ c.subcommittees|length }}
+                    <ul>
+                        {% for sub in c.subcommittees %}
+                            <li id="committee-{{c.thomas_id}}">{{ sub.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        
+        </table>
+{% endblock %}

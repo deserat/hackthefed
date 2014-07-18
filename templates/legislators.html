@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}:: Legslators{% endblock %}
+
+{% block seo %}
+    <meta keywords="Congress, Legislators">
+    <meta description="A list of congressional legislators">
+{% endblock %}
+
+{% block content %}
+        <h2>Legslators</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Bills Sponsored</th>
+                <th>Bills Cosponsored</th>
+            </tr> 
+        {% for l in legislators %}
+            <tr>
+                <td>{{ l.first_name }} {{ l.last_name }}</td>
+                <td>{{ l.sponsor_count }}</td>
+                <td>{{ l.cosponsor_count }}</td>
+            </tr>
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        </table>
+{% endblock %}

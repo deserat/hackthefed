@@ -1,47 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}:: Subjects :: {{subject.name}}{% endblock %}
-
-{% block seo %}
-    <meta keywords="Congress, Statistics, Subjects">
-    <meta description="{{ bill.title }}">
-{% endblock %}
 
 {% block content %}
-        <h2>Congressmen</h2>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Bills Sponsored</th>
-                <th>Bills Cosponsored</th>
-            </tr> 
-        {% for l in legislators %}
-            <tr>
-                <td>{{ l.first_name }} {{ l.last_name }}</td>
-                <td>{{ l.sponsor_count }}</td>
-                <td>{{ l.cosponsor_count }}</td>
-            </tr>
-                
-        {% else %}
-            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
-        {% endfor %}
-        </table>
-        <h2>States</h2>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Bills Sponsored</th>
-                <th>Bills Cosponsored</th>
-            </tr> 
-        {% for state in states %}
-            <tr>
-                <td>{{ state.name }}</td>
-                <td>{{ state.sponsor_count }}</td>
-                <td>{{ state.cosponsor_count }}</td>
-            </tr>
-                
-        {% else %}
-            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
-        {% endfor %}
-        </table>
+        <ul>
+            <li><a href="/states">States</a></li>
+            <li><a href="/legislators">Legislators</a></li>
+            <li><a href="/subjects">Subjects</a></li>
+            <li><a href="/committees">Committees</a></li>
+        </ul>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}:: Subjects :: {{subject.name}}{% endblock %}
+
+{% block seo %}
+    <meta keywords="Congress, Statistics, Subjects">
+    <meta description="{{ subject.name }}">
+{% endblock %}
+
+{% block content %}
+        
+    <a href="/subjects">Back to Subjects</a>
+    <h1>{{ subject.name }}</h1>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Name</th>
+        </tr>
+    {% for bill in subject.bills %}
+        <tr>
+            <td>{{ bill.type }}</td>
+            <td>{{ bill.title }}</td>
+        </tr>    
+    {% else %}
+        <li><em>Unbelievable.  No entries here so far</em></li>
+    {% endfor %}
+
+    </table>
+{% endblock %}
+
