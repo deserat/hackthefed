@@ -77,7 +77,7 @@ for root, dirs, files in os.walk(DATA_DIR):
 
 
             #print rez.get('subjects', None)
-            for subject in rez.get('subjects', None):
+            for subject in rez.get('subjects', []):
                 db.subject.update(
                     {"name": subject},
                     {
