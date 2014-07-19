@@ -21,7 +21,7 @@ import json
 #
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = "{0}/data/congress/113/bills/".format(APP_DIR)
+DATA_DIR = "{0}/data/congress/".format(APP_DIR)
 
 
 db = pymongo.MongoClient("127.0.0.1", safe=True).congress
