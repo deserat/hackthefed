@@ -51,7 +51,7 @@ for root, dirs, files in os.walk(DATA_DIR):
         print file_path
 
         # Check if the bill has a sponsor if so give 'em credit
-        if sponsor and sponsor['state'].has_key("state"):
+        if sponsor and sponsor.has_key("state"):
             db.states.update(
                 { "name" : sponsor['state'] },
                 { "$inc" : { "sponsor_count" : 1} },
