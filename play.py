@@ -4,6 +4,10 @@
 # elsewhere.
 # 
 
+# TODO: for legislator add subject with activity count
+# TODO: Map legislator to  congresses
+# TODO:  Map legislator to committees
+
 
 import nltk
 from nltk import bigrams
@@ -15,6 +19,11 @@ import calendar
 import pymongo
 import bson
 import json
+import thread
+
+
+# TODO: when backonline load by hostname or rolename
+from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
 
 #
 # Settings
@@ -24,11 +33,11 @@ APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "{0}/data/congress/".format(APP_DIR)
 
 
-db = pymongo.MongoClient("127.0.0.1", safe=True).congress
+db = pymongo.MongoClient(DB_HOST, safe=True).congress
 
 
 # 
-# Drop collections while we play
+# Drop collections while we play'
 # 
 
 db.states.drop()
@@ -37,18 +46,21 @@ db.subject.drop()
 db.create_collection("subject")
 
 
+def get_job_dirs():
+    return []
 
+
+#def process_bills(dir_subset):
 # Loop over bills. Count and tally statistics on congressmen 
 # for each peace of legislation.
 
 for root, dirs, files in os.walk(DATA_DIR):
     if "data.json" in files:
         file_path = "{0}/data.json".format(root)
-        rez = json.loads( open(file_path, 'r').read() )
-        
-        sponsor = rez.get('sponsor', None)
-
         print file_path
+        bill = json.loads( open(file_path, 'r').read() )
+        
+        sponsor = bill.get('sponsor', None)
 
         # Check if the bill has a sponsor if so give 'em credit
         if sponsor and sponsor.has_key("state"):
@@ -58,68 +70,109 @@ for root, dirs, files in os.walk(DATA_DIR):
                 True,
                 False
             )
+
             
-            print "updateing congressman"
-            db.legislator.update(
-                {"thomas_id": sponsor['thomas_id'] },
+        if sponsor:
+            # some bills are sponsored by legislators some by committees
+            if sponsor.get('thomas_id', None ):
+                db.legislator.update(
+                    {"thomas_id": sponsor['thomas_id'] },
+                    {
+                        "$inc" : { 
+                            "sponsor_count" : 1,
+                        },
+                        "$push" : { "sponsored_resolutions": 
+                            {
+                                "bill_id" : bill.get("bill_id", "NOID"),
+                                "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                            }
+                        },
+                    }
+                )
+            else:
+                db.committee.update(
+                    {"committee_id": sponsor['committee_id'] },
+                    {
+                        "$inc" : { 
+                            "sponsor_count" : 1,
+                        },
+                        "$push" : { "sponsored_resolutions": 
+                            {
+                                "bill_id" : bill.get("bill_id", "NOID"),
+                                "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                            }
+                        },
+                    }
+                )
+
+
+        #print bill.get('subjects', None)
+        for subject in bill.get('subjects', []):
+            db.subject.update(
+                {"name": subject},
                 {
-                    "$inc" : { 
-                        "sponsor_count" : 1,
+                    "$inc": {
+                        "count": 1
                     },
-                    "$push" : { "sponsored_resolutions": 
+                    "$push" : { "bills": 
                         {
-                            "bill_id" : rez.get("bill_id", "NOID"),
-                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                            "bill_id" : bill.get("bill_id", "NOID"),
+                            "type" : bill.get('bill_type',None),
+                            "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
                         }
                     }
-                }
+                },
+                True,
+                False
             )
 
+            if sponsor:
+                # We are interested in the subjects on which legislators are active
+                # FIXME: figure out how to do this inside the legislator document damn stupid to have a seperate collection
+                print sponsor
+                try:
+                    db.legislator_subjects.update(
+                        {"thomas_id": sponsor['thomas_id'] },
+                        {
+                            "$inc" : {
+                                "{0}".format(subject) : 1
+                            }
+                        },
+                        True,
+                        False
+                    )
+                except:
+                   print "No sponsor"
+            else:
+                print "Bill {0}".format(bill.get("official_title", "TITLE"))
 
-            #print rez.get('subjects', None)
-            for subject in rez.get('subjects', []):
-                db.subject.update(
-                    {"name": subject},
-                    {
-                        "$inc": {
-                            "count": 1
-                        },
-                        "$push" : { "bills": 
-                        {
-                            "bill_id" : rez.get("bill_id", "NOID"),
-                            "type" : rez.get('bill_type',None),
-                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                        }
-                    }
+
+            
+        #print bill.get('subjects_top_term', None)
+        if bill.get('subjects_top_term', None):
+            db.subject.update(
+                {"name": subject},
+                {
+                    "$inc": {
+                        "top_count": 1
                     },
-                    True,
-                    False
-                )
-            #print rez.get('subjects_top_term', None)
-            if rez.get('subjects_top_term', None):
-                db.subject.update(
-                    {"name": subject},
+                    "$push" : { "bills": 
                     {
-                        "$inc": {
-                            "top_count": 1
-                        },
-                        "$push" : { "bills": 
-                        {
-                            "bill_id" : rez.get("bill_id", "NOID"),
-                            "type" : rez.get('bill_type',None),
-                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                        }
+                        "bill_id" : bill.get("bill_id", "NOID"),
+                        "type" : bill.get('bill_type',None),
+                        "title": bill.get("official_title", "TITLE") # make a function that gets on of the titles
                     }
-                    },
-                    True,
-                    False
-                )
+                }
+                },
+                True,
+                False
+            )
                 
 
         # Loop through all the cosponsors of a bill and give them each credit for the bills
         # they cosponsor
 
-        for cosponsor in rez.get('cosponsors', ()):
+        for cosponsor in bill.get('cosponsors', ()):
 
             db.states.update(
                 { "name" : cosponsor['state'] },
@@ -134,13 +187,13 @@ for root, dirs, files in os.walk(DATA_DIR):
                     "$inc" : { "cosponsor_count" : 1},
                     "$push" : { "cosponsored_resolutions": 
                         {
-                            "bill_id" : rez.get("bill_id", "NOID"),
-                            "title": rez.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                            "bill_id" : bill.get("bill_id", "NOID"),
+                            "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
                         }
                     }
                 }
             )
-                
+            
 
 
 # bigram_counts = {}
