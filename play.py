@@ -118,7 +118,7 @@ for root, dirs, files in os.walk(DATA_DIR):
                         {
                             "bill_id" : bill.get("bill_id", "NOID"),
                             "type" : bill.get('bill_type',None),
-                            "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                            "title": bill.get("official_title", "TITLE") # make a function that gets one of the titles
                         }
                     }
                 },
@@ -128,7 +128,7 @@ for root, dirs, files in os.walk(DATA_DIR):
 
             if sponsor:
                 # We are interested in the subjects on which legislators are active
-                # FIXME: figure out how to do this inside the legislator document damn stupid to have a seperate collection
+                # FIXME: figure out how to do this inside the legislator document. It's damn stupid to have a seperate collection
                 print sponsor
                 try:
                     db.legislator_subjects.update(
