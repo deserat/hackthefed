@@ -10,7 +10,7 @@ DATA_DIR = "{0}/data/congress-legislators/".format(APP_DIR)
 
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
 
-db = pymongo.MongoClient(DB_HOST, w=0).congress
+db = pymongo.MongoClient(DB_HOST).congress
 
 db.committee.drop()
 db.create_collection("committee")

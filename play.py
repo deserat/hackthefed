@@ -38,7 +38,7 @@ APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "{0}/data/congress/".format(APP_DIR)
 
 
-db = pymongo.MongoClient(DB_HOST, w=0).congress
+db = pymongo.MongoClient(DB_HOST,j=False).congress
 
 
 # 
@@ -65,7 +65,7 @@ def process_bills(subset):
     for subdir in subset:
         this_dir = "{0}/{1}".format(DATA_DIR, subdir)
         for root, dirs, files in os.walk(this_dir):
-            if "data.json" in files:
+            if "data.json" in files and "text-versions" not in root:
                 file_path = "{0}/data.json".format(root)
                 print file_path
                 bill = json.loads( open(file_path, 'r').read() )
