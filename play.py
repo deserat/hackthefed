@@ -4,7 +4,7 @@
 # elsewhere.
 # 
 
-# TODO: Implement multiprocessing! Would be nice to complete a job in less that 48 hours.
+# TODO: Break up legistlator documents so that sub document are other collections. Write performance.
 
 # TODO: for legislator add subject with activity count
 # TODO: Map legislator to  congresses
