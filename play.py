@@ -38,7 +38,7 @@ APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "{0}/data/congress/".format(APP_DIR)
 
 
-db = pymongo.MongoClient(DB_HOST, safe=True).congress
+db = pymongo.MongoClient(DB_HOST, w=0,j=False,fsync=False).congress
 
 
 # 
