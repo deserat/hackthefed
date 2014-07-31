@@ -91,12 +91,14 @@ def process_bills(subset):
                                 "$inc" : { 
                                     "sponsor_count" : 1,
                                 },
-                                "$push" : { "sponsored_resolutions": 
-                                    {
-                                        "bill_id" : bill.get("bill_id", "NOID"),
-                                        "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                                    }
-                                },
+                            }
+                        )
+
+                        db.legislator_sponsored.insert(
+                            {
+                                "thomas_id": sponsor['thomas_id'],
+                                "bill_id" : bill.get("bill_id", "NOID"),
+                                "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
                             }
                         )
                     else:
@@ -135,6 +137,8 @@ def process_bills(subset):
                         True,
                         False
                     )
+
+                    db.subject_bills.insert
 
                     if sponsor:
                         # We are interested in the subjects on which legislators are active

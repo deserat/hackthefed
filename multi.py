@@ -5,10 +5,6 @@ APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = "{0}/data/congress".format(APP_DIR)
 
 
-def worker(d):
-    """thread worker function"""
-    print 'Directory:', d
-    return
 def process_bills(subset):
 # Loop over bills. Count and tally statistics on congressmen 
 # for each peace of legislation.
