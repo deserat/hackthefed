@@ -26,7 +26,6 @@ import json
 import multiprocessing
 
 
-
 # TODO: when backonline load by hostname or rolename
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
 
@@ -52,7 +51,7 @@ db.create_collection("subject")
 
 
 def chunks(l, n):
-    """ Yield successive n-sized chunks from l.
+    """ Yield successive n-sized chunks from a list
     """
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
@@ -98,7 +97,7 @@ def process_bills(subset):
                             {
                                 "thomas_id": sponsor['thomas_id'],
                                 "bill_id" : bill.get("bill_id", "NOID"),
-                                "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
+                                "title": bill.get("official_title", "NO TITLE") # make a fucntion that gets on of the titles
                             }
                         )
                     else:
@@ -108,12 +107,13 @@ def process_bills(subset):
                                 "$inc" : { 
                                     "sponsor_count" : 1,
                                 },
-                                "$push" : { "sponsored_resolutions": 
-                                    {
-                                        "bill_id" : bill.get("bill_id", "NOID"),
-                                        "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                                    }
-                                },
+                            }
+                        )
+                        db.committee_sponsored.insert(
+                            { 
+                                "committee_id": sponsor['committee_id'],
+                                "bill_id" : bill.get("bill_id", "NOID"),
+                                "title": bill.get("official_title", "NO TITLE") # make a fucntion that gets on of the titles
                             }
                         )
 
@@ -126,19 +126,20 @@ def process_bills(subset):
                             "$inc": {
                                 "count": 1
                             },
-                            "$push" : { "bills": 
-                                {
-                                    "bill_id" : bill.get("bill_id", "NOID"),
-                                    "type" : bill.get('bill_type',None),
-                                    "title": bill.get("official_title", "TITLE") # TODO:  make a function that gets one of the titles
-                                }
-                            }
+                            
                         },
                         True,
                         False
                     )
 
-                    db.subject_bills.insert
+                    db.subject_bills.insert(
+                        {
+                            "sub"
+                            "bill_id" : bill.get("bill_id", "NOID"),
+                            "type" : bill.get('bill_type',None),
+                            "title": bill.get("official_title", "TITLE") # TODO:  make a function that gets one of the titles
+                        }
+                    )
 
                     if sponsor:
                         # We are interested in the subjects on which legislators are active
@@ -169,14 +170,7 @@ def process_bills(subset):
                         {
                             "$inc": {
                                 "top_count": 1
-                            },
-                            "$push" : { "bills": 
-                            {
-                                "bill_id" : bill.get("bill_id", "NOID"),
-                                "type" : bill.get('bill_type',None),
-                                "title": bill.get("official_title", "TITLE") # make a function that gets on of the titles
                             }
-                        }
                         },
                         True,
                         False
@@ -199,18 +193,21 @@ def process_bills(subset):
                         {"thomas_id": cosponsor['thomas_id'] },
                         {
                             "$inc" : { "cosponsor_count" : 1},
-                            "$push" : { "cosponsored_resolutions": 
-                                {
-                                    "bill_id" : bill.get("bill_id", "NOID"),
-                                    "title": bill.get("official_title", "TITLE") # make a fucntion that gets on of the titles
-                                }
-                            }
+                        }
+                    )
+
+                    db.legislator_cosponsored.insert(
+                        {
+                            "thomas_id": sponsor['thomas_id'],
+                            "bill_id" : bill.get("bill_id", "NO ID"),
+                            "title": bill.get("official_title", "NO TITLE") # make a fucntion that gets on of the titles
                         }
                     )
                     
 if __name__ == '__main__':
     jobs = []
-    dirs = os.walk(DATA_DIR).next()[1]
+    #dirs = os.walk(DATA_DIR).next()[1]
+    dirs = [103,104,105,106,107,108,109,110,111,112,113]
     num = len(dirs)
     procs = num / 4
     for subset in list(chunks(dirs, procs)):
