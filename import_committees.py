@@ -68,4 +68,4 @@ with open("{0}/committees-historical.yaml".format(DATA_DIR), 'r') as stream:
     process_committees(committees)   
 
 
-db.subject.create_index({"thomas_id":1})
+db.subject.create_index("thomas_id")

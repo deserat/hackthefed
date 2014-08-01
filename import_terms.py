@@ -25,4 +25,4 @@ with open(DATA_DIR, 'rb') as csvfile:
     for t in terms:
         db.subject.insert( { "name" : t } )
 
-db.subject.create_index({"name":1})
+db.subject.create_index("name")
