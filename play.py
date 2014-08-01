@@ -127,9 +127,7 @@ def process_bills(subset):
                                 "count": 1
                             },
                             
-                        },
-                        True,
-                        False
+                        }
                     )
 
                     db.subject_bills.insert(
@@ -171,9 +169,7 @@ def process_bills(subset):
                             "$inc": {
                                 "top_count": 1
                             }
-                        },
-                        True,
-                        False
+                        }
                     )
                         
 
