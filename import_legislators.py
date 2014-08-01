@@ -39,3 +39,5 @@ with open("{0}/legislators-historic.csv".format(DATA_DIR), 'rb') as csvfile:
 with open("{0}/legislators-current.csv".format(DATA_DIR), 'rb') as csvfile:
     legislators = csv.reader(csvfile) 
     process_legislators(legislators)    
+
+db.legislator.create_index({"thomas_id":1})

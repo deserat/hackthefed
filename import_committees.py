@@ -66,3 +66,6 @@ with open("{0}/committees-current.yaml".format(DATA_DIR), 'r') as stream:
 with open("{0}/committees-historical.yaml".format(DATA_DIR), 'r') as stream:
     committees = yaml.load(stream) 
     process_committees(committees)   
+
+
+db.subject.create_index({"thomas_id":1})
