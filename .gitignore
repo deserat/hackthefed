@@ -3,4 +3,4 @@ data
 env
 .idea
 
-conf/web.conf
+conf/*
