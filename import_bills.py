@@ -11,15 +11,7 @@
 # TODO:  Map legislator to committees
 
 
-
-
-# import nltk
-# from nltk import bigrams
-# from nltk.corpus import stopwords
-# from nltk.tokenize import RegexpTokenizer
-import operator
 import os
-import calendar
 import pymongo
 import bson
 import json
@@ -52,6 +44,9 @@ db.states.drop()
 db.create_collection("states")
 db.subject.drop()
 db.create_collection("subject")
+db.congress.drop()
+db.create_collection("congress")
+
 
 
 def chunks(l, n):
@@ -59,6 +54,14 @@ def chunks(l, n):
     """
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
+
+
+
+
+def create_congresses(congresses):
+    for c in congresses:
+        db.congress.insert({"name":c})
+        db.congress.create_index("name")
 
 
 def process_bills(subset):
@@ -73,6 +76,18 @@ def process_bills(subset):
                 print file_path
                 bill = json.loads( open(file_path, 'r').read() )
                 
+
+                
+                congress = bill.get("congress", "0")
+                print congress
+
+                db.congress.update(
+                    {"name":congress},
+                    {
+                        "$inc": { bill.get("bill_type", "NO TYPE") : 1 }
+                    }
+                )
+
                 sponsor = bill.get('sponsor', None)
 
                 # Check if the bill has a sponsor if so give 'em credit
@@ -87,6 +102,8 @@ def process_bills(subset):
                     
                 if sponsor:
                     # some bills are sponsored by legislators some by committees
+                    # if legislator do this:
+                    # TODO: Committees also have thomas_id's dig into this further
                     if sponsor.get('thomas_id', None ):
                         db.legislator.update(
                             {"thomas_id": sponsor['thomas_id'] },
@@ -104,6 +121,7 @@ def process_bills(subset):
                                 "title": bill.get("official_title", "NO TITLE") # make a fucntion that gets on of the titles
                             }
                         )
+                    # If committee do this.
                     else:
                         db.committee.update(
                             {"committee_id": sponsor['committee_id'] },
@@ -206,108 +224,12 @@ def process_bills(subset):
                     
 if __name__ == '__main__':
     jobs = []
-    #dirs = os.walk(DATA_DIR).next()[1]
+    dirs = os.walk(DATA_DIR).next()[1]
     #dirs = [103,104,105,106,107,108,109,110,111,112,113]
-    dirs = []
+    create_congresses(dirs)
     num = len(dirs)
     procs = num / 4
     for subset in list(chunks(dirs, procs)):
         p = multiprocessing.Process(target=process_bills, args=(subset,))
         jobs.append(p)
         p.start()
-
-# bigram_counts = {}
-
-# stop_words = stopwords.words('english')
-
-
-# stop_words = stop_words + [
-#     "senate", "congress", "session", "113th", "u.s.","government",
-#     "bill", "in", "the", "Res","office", "rule", "law","ats" ]
-
-# stop_bigrams = ['people united', 'exceed 000', 'resolution considered',
-#     'rules senate', 'standing rules', 'act u', 'whereas united', 'u c',
-#     'senate 1st', 'res agreed', 'united states', 'senate united',
-#     'congressional bills', 'printing res', 'u printing', 'bills u',
-#     'submitted following', 'following resolution', 'therefore resolved',
-#     '1st res', 'states whereas', 'resolved senate', '000 000', 'referred committee',
-#     'resolution referred', 'senate ats']
-
-
-# # very niaeve fix me
-# for n in range(0,2015):
-#     stop_words.append("{0}".format(n))
-
-
-# # very niaeve fix me
-# for n in range(1,12):
-#     stop_words.append(calendar.month_name[n])
-
-# bigram_strings = []
-
-
-
-
-
-        # {
-        #     "district": null, 
-        #     "name": "Reid, Harry", 
-        #     "state": "NV", 
-        #     "thomas_id": "00952", 
-        #     "title": "Sen", 
-        #     "sponser_count" : 0,
-        #     "sponsered_resolutions" : [
-        #         {
-        #             "id": "name"
-        #             "title": "name"
-        #         },
-        #     ],
-        #     "sponsered_bills" : [
-        #         {
-        #             "id": "name"
-        #             "title": "name"
-        #         },
-        #     ],
-        #     "sponsered_subjects" : {
-        #         "Civil actions and liability" : 35,
-        #         "Evidence and witnesses": 2,
-        #     }
-
-        # }, 
-
-
-
-
-
-    # if "document.txt" in files:
-    #     file_path = "{0}/document.txt".format(root)
-    #     print file_path
-    #     f = open(file_path, 'r')
-    #     text = f.read()
-
-    #     db.bigrams.update({})
-
-    #     tokenizer = RegexpTokenizer(r'[a-zA-Z0-9]+')
-    #     tokenized = tokenizer.tokenize(text)
-
-    #     for b in bigrams([word.strip().lower() for word in tokenized if word.strip().lower() not in stop_words]):
-    #         if '%s %s' % b not in stop_bigrams:
-    #             bigram_strings.append(b)
-
-
-# print "######## Counting Bigrams ###################"
-# for bi in bigram_strings:
-#     bi_key = '%s %s' % bi
-#     if bi_key not in bigram_counts.keys():
-#         bigram_counts[bi_key] = 1
-#     else:
-#         bigram_counts[bi_key] = bigram_counts[bi_key] + 1
-
-
-# print "######## Sorting Bigrams ###################"
-# sorted_bigrams = sorted(bigram_counts.iteritems(), key=operator.itemgetter(1),reverse=True)
-
-
-# for i in range(0, 100):
-#     print sorted_bigrams[i]
-#     #print " {0} : {1} ".format(sorted_bigrams[i])
