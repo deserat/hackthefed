@@ -14,19 +14,22 @@
     <table>
         <tr>
             <th>Number</th>
-            <th>House Resolution</th>
             <th>House</th>
+            <th>House Resolution</th>
+            <th>House Joint Resolution</th>
             <th>Senate</th>
             <th>Senate Resolution</th>
+            <th>Senate Joint Resolution</th>
         </tr>
     {% for congress in congresses %}
         <tr>
             <td>{{ congress.name }}</td>
-            <td>{{ congress.hres }}</td>
             <td>{{ congress.hr }}</td>
+            <td>{{ congress.hres }}</td>
+            <td>{{ congress.hjres }}</td>
             <td>{{ congress.s }}</td>
             <td>{{ congress.sres }}</td>
-            <td>{{ congress }}</td>
+            <td>{{ congress.sjres }}</td>
 
         </tr>    
     {% else %}
