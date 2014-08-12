@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}:: Subjects :: {% endblock %}
+
+{% block seo %}
+    <meta keywords="Congresses, Statistics, Subjects, Legislation">
+    
+{% endblock %}
+
+{% block content %}
+        
+    <a href="/">Back to Home</a>
+    <h1>Congresses</h1>
+    <table>
+        <tr>
+            <th>Number</th>
+            <th>House Resolution</th>
+            <th>House</th>
+            <th>Senate</th>
+            <th>Senate Resolution</th>
+        </tr>
+    {% for congress in congresses %}
+        <tr>
+            <td>{{ congress }}</td>
+
+        </tr>    
+    {% else %}
+        <li><em>Unbelievable.  No entries here so far</em></li>
+    {% endfor %}
+
+    </table>
+{% endblock %}
+

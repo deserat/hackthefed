@@ -10,9 +10,6 @@
 # TODO: Map legislator to  congresses
 # TODO:  Map legislator to committees
 
-
-
-
 # import nltk
 # from nltk import bigrams
 # from nltk.corpus import stopwords
@@ -25,10 +22,6 @@ import bson
 import json
 import multiprocessing
 import socket
-
-
-
-
 
 # TODO: when backonline load by hostname or rolename
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
