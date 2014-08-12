@@ -3,7 +3,9 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 import pymongo
 import bson
 
-db = pymongo.MongoClient("127.0.0.1", safe=True).congress
+from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
+
+db = pymongo.MongoClient(DB).congress
 
 app = Flask(__name__)
 
