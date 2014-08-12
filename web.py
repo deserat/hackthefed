@@ -5,7 +5,8 @@ import bson
 
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
 
-db = pymongo.MongoClient(DB).congress
+print DB
+db = pymongo.MongoClient(DB_HOST, safe=True).congress
 
 app = Flask(__name__)
 
@@ -56,7 +57,7 @@ def legislators():
 
 @app.route('/congresses/', methods=['GET'])
 def congresses():
-    congresses = db.congress.find().sort({ "name":1})
+    congresses = db.congress.find().sort("name")
 
     return render_template('congresses.html', congresses=congresses)
 
