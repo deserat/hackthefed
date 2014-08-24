@@ -2,6 +2,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 
 import pymongo
 import bson
+from flask import json
 
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
 
@@ -57,9 +58,12 @@ def legislators():
 
 @app.route('/congresses/', methods=['GET'])
 def congresses():
-    congresses = db.congress.find().sort("name")
+    congresses = db.congress.find()
 
-    return render_template('congresses.html', congresses=congresses)
+    for c in congresses:
+        c["id"] = int(c["id"])
+
+    return json.jsonify(congresses)
 
 
 if __name__ == "__main__":
