@@ -6,14 +6,45 @@
             <meta keywords="Congressional Statistics">
             <meta description="Quantifying Congressional Activity">
         {% endblock %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {% block css %}
+        {% endblock %}
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/paper/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+
         {% block social %}
             <meta og:title="Congressional Statistics">
             <meta og:description="Congressional Statistics">
         {% endblock %}
+
         <link href="/static/css/main.css" type="text/stylesheet">
     </head>
+
     <body>
-        {% block content %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    <ul>
+                        <li><a href="/states">States</a></li>
+                        <li><a href="/legislators">Legislators</a></li>
+                        <li><a href="/subjects">Subjects</a></li>
+                        <li><a href="/committees">Committees</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-10">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js"> </script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        
+        {% block js %}
         {% endblock %}
+        
+
     </body>
 <html>
