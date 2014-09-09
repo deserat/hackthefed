@@ -51,10 +51,12 @@ def chunks(l, n):
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
 
+
 def create_congresses(congresses):
     for c in congresses:
-        db.congress.insert({"name":c})
+        db.congress.insert({"name":int(c)})
         db.congress.create_index("name")
+
 
 def process_bills(subset):
     """ Loop over bills. Count and tally statistics on congressmen 
