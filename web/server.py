@@ -23,7 +23,6 @@ def index():
 
 @app.route('/states', methods=['GET'])
 def states():
-
     states = db.states.find().sort([("sponsor_count",pymongo.DESCENDING)])
 
     return render_template('states.html', states=states)
@@ -31,8 +30,7 @@ def states():
 
 @app.route('/committees', methods=['GET'])
 def committees():
-
-    committees = db.committee.find()
+    committees = db.committee.find().sort([("type",pymongo.ASCENDING)])
 
     return render_template('committees.html', committees=committees)
 
