@@ -8,15 +8,19 @@
 {% endblock %}
 
 {% block content %}
-       <h2>States</h2>
-        <table>
+       <div class="panel panel-default">
+            <div class="panel-heading">Committies</div>
+            <div class="panel-body">
+               <p>Table of numbe of bills sponsered and cosponsered by state.</p>
+            </div>
+            <table class="table">
             <tr>
                 <th>Name</th>
                 <th>Bills Sponsored</th>
                 <th>Bills Cosponsored</th>
             </tr> 
         {% for state in states %}
-            <tr>
+            <tr>tw
                 <td>{{ state.name }}</td>
                 <td>{{ state.sponsor_count }}</td>
                 <td>{{ state.cosponsor_count }}</td>
@@ -26,4 +30,5 @@
             <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
         {% endfor %}
         </table>
+    </div>
 {% endblock %}
