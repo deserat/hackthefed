@@ -76,8 +76,6 @@ def process_bills(subset):
                 print file_path
                 bill = json.loads( open(file_path, 'r').read() )
                 
-
-                
                 congress = bill.get("congress", "0")
                 print congress
 

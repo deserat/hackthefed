@@ -24,7 +24,7 @@ def index():
 @app.route('/states', methods=['GET'])
 def states():
 
-    states = db.states.find()
+    states = db.states.find().sort([("sponsor_count",pymongo.DESCENDING)])
 
     return render_template('states.html', states=states)
 
@@ -50,7 +50,7 @@ def subject(subject_id):
 
 @app.route('/legislators/', methods=['GET'])
 def legislators():
-    legislators = db.legislator.find() #.sort({ "sponser_count":1}).limit(10)
+    legislators = db.legislator.find().sort([("sponsor_count",pymongo.DESCENDING)]) #.sort({ "sponser_count":1}).limit(10)
 
     return render_template('legislators.html', legislators=legislators)
 
