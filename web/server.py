@@ -57,7 +57,7 @@ def legislators():
 
 @app.route('/congresses/', methods=['GET'])
 def congresses():
-    congresses = db.congress.find().sort("name")
+    congresses = db.congress.find().sort({"name":-1})
 
     return render_template('congresses.html', congresses=congresses)
 
