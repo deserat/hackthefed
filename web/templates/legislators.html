@@ -8,8 +8,12 @@
 {% endblock %}
 
 {% block content %}
-        <h2>Legslators</h2>
-        <table>
+    <div class="panel panel-default">
+        <div class="panel-heading">Legislators</div>
+        <div class="panel-body">
+           <p>The Number of bills sponsored and co-sponsored by legislators .</p>
+        </div>
+        <table class="table">
             <tr>
                 <th>Name</th>
                 <th>Bills Sponsored</th>
@@ -26,4 +30,5 @@
             <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
         {% endfor %}
         </table>
+    </div>
 {% endblock %}
