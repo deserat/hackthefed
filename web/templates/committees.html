@@ -16,8 +16,10 @@
             <table class="table">
                 <tr>
                     <th>Name</th>
-                    <th>Type</thM
+                    <th>Type</th>
                     <th>Congresses</th>
+                    <th>Sub. Count</th>
+
                     <th>Subcommittees</th>
                 </tr> 
             {% for c in committees %}
@@ -29,8 +31,8 @@
                             {{ congress }},
                         {% endfor %}
                     </td>
+                    <td>{{ c.subcommittees|length }}</td>
                     <td>
-                        {{ c.subcommittees|length }}
                         <ul>
                             {% for sub in c.subcommittees %}
                                 <li id="committee-{{c.thomas_id}}">{{ sub.name }}</li>
