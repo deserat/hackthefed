@@ -8,37 +8,42 @@
 {% endblock %}
 
 {% block content %}
-        <h2>Commitiees</h2>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Type</thM
-                <th>Congresses</th>
-                <th>Subcommittees</th>
-            </tr> 
-        {% for c in committees %}
-            <tr id="committee-{{c.thomas_id}}">
-                <td>{{ c.name }}</td>
-                <td>{{ c.type }}</td>
-                <td>
-                    {% for congress in  c.congresses  %}
-                        {{ congress }},
-                    {% endfor %}
-                </td>
-                <td>
-                    {{ c.subcommittees|length }}
-                    <ul>
-                        {% for sub in c.subcommittees %}
-                            <li id="committee-{{c.thomas_id}}">{{ sub.name }}</li>
+        <div class="panel panel-default">
+        <div class="panel-heading">Committies</div>
+            <div class="panel-body">
+               <p>Table Depicting the number and type of pieces of legislation produced by each congress.</p>
+            </div>
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Type</thM
+                    <th>Congresses</th>
+                    <th>Subcommittees</th>
+                </tr> 
+            {% for c in committees %}
+                <tr id="committee-{{c.thomas_id}}">
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.type }}</td>
+                    <td>
+                        {% for congress in  c.congresses  %}
+                            {{ congress }},
                         {% endfor %}
-                    </ul>
-                </td>
-            </tr>
+                    </td>
+                    <td>
+                        {{ c.subcommittees|length }}
+                        <ul>
+                            {% for sub in c.subcommittees %}
+                                <li id="committee-{{c.thomas_id}}">{{ sub.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
 
-                
-        {% else %}
-            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
-        {% endfor %}
-        
-        </table>
+                    
+            {% else %}
+                <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+            {% endfor %}
+            
+            </table>
+        </div>
 {% endblock %}

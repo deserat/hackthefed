@@ -61,7 +61,7 @@ def congresses():
     congresses = db.congress.find()
 
     for c in congresses:
-        c["id"] = int(c["id"])
+        c["congress"] = int(c["congress"])
 
     return json.jsonify(congresses)
 

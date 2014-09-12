@@ -17,35 +17,36 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">Panel heading</div>
-            <div class="panel-body">
-               <p>Table Depicting the number and type of pieces of legislation produced by each congress.</p>
-            </div>
-            <table class="table">
-                <tr>
-                    <th>Number</th>
-                    <th>House</th>
-                    <th>House Res</th>
-                    <th>House J Res</th>
-                    <th>Senate</th>
-                    <th>Senate Res</th>
-                    <th>Senate J Res</th>
-                </tr>
-            {% for congress in congresses %}
-                <tr>
-                    <td>{{ congress.name }}</td>
-                    <td>{{ congress.hr }}</td>
-                    <td>{{ congress.hres }}</td>
-                    <td>{{ congress.hjres }}</td>
-                    <td>{{ congress.s }}</td>
-                    <td>{{ congress.sres }}</td>
-                    <td>{{ congress.sjres }}</td>
+        <div class="panel-body">
+           <p>Table Depicting the number and type of pieces of legislation produced by each congress.</p>
+        </div>
+        <table class="table">
+            <tr>
+                <th>Number</th>
+                <th>House</th>
+                <th>House Res</th>
+                <th>House J Res</th>
+                <th>Senate</th>
+                <th>Senate Res</th>
+                <th>Senate J Res</th>
+            </tr>
+        {% for congress in congresses %}
+            <tr>
+                <td>{{ congress.name }}</td>
+                <td>{{ congress.hr }}</td>
+                <td>{{ congress.hres }}</td>
+                <td>{{ congress.hjres }}</td>
+                <td>{{ congress.s }}</td>
+                <td>{{ congress.sres }}</td>
+                <td>{{ congress.sjres }}</td>
 
-                </tr>    
-            {% else %}
-                <li><em>Unbelievable.  No entries here so far</em></li>
-            {% endfor %}
+            </tr>    
+        {% else %}
+            <li><em>Unbelievable.  No entries here so far</em></li>
+        {% endfor %}
 
-            </table>
+        </table>
+    </div>
 {% endblock %}
 
 {% block js %}
