@@ -1,3 +1,4 @@
+
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 
 import pymongo
@@ -54,6 +55,13 @@ def legislators():
 
 
 @app.route('/congresses/', methods=['GET'])
+def congresses():
+    congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
+
+    return render_template('congresses.html', congresses=congresses)
+
+
+@app.route('/congresses.json', methods=['GET'])
 def congresses():
     congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
 
