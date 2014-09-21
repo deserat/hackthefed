@@ -1,12 +1,14 @@
 
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, jsonify
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 
 import pymongo
 import bson
+from bson import json_util
+import json
 
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
 
-print DB
+
 db = pymongo.MongoClient(DB_HOST, safe=True).congress
 
 app = Flask(__name__)
@@ -54,18 +56,26 @@ def legislators():
     return render_template('legislators.html', legislators=legislators)
 
 
-@app.route('/congresses.json', methods=['GET'])
-def congresses_json():
-    congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
-
-    return bson.json_util(congresses)
-
 @app.route('/congresses/', methods=['GET'])
 def congresses():
     congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
 
     return render_template('congresses.html', congresses=congresses)
 
+
+@app.route('/congresses.json', methods=['GET'])
+def congresses_json():
+    congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
+    response = []
+    for c in congresses:
+        id = str(c['_id'])
+        del c['_id']
+        c['id'] = id
+        
+        response.append(c)
+    print response
+    
+    return json.dumps(response)
 
 
 if __name__ == "__main__":
