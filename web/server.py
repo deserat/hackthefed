@@ -3,7 +3,6 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 
 import pymongo
 import bson
-from bson import json_util
 import json
 
 from conf.vance import DB, DB_HOST, DB_USER, DB_PASS
@@ -69,7 +68,7 @@ def congresses_json():
     response = []
 
     # TODO: Write serializer once we figure out what common things need normalization
-    # bson serialization of id is un acceptable.
+    # bson serialization of id is unacceptable.
     for c in congresses:
         c['id'] = str(c['_id'])
         del c['_id']
