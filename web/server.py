@@ -67,13 +67,13 @@ def congresses():
 def congresses_json():
     congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
     response = []
+
+    # TODO: Write serializer once we figure out what common things need normalization
+    # bson serialization of id is un acceptable.
     for c in congresses:
-        id = str(c['_id'])
+        c['id'] = str(c['_id'])
         del c['_id']
-        c['id'] = id
-        
         response.append(c)
-    print response
     
     return json.dumps(response)
 
