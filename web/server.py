@@ -57,9 +57,14 @@ def legislators():
 
 @app.route('/congresses/', methods=['GET'])
 def congresses():
-    congresses = db.congress.find().sort([("name",pymongo.DESCENDING)])
+    congresses = list(db.congress.find().sort([("name",pymongo.DESCENDING)]))
+    d = []
+    for c in congresses:
+        c['id'] = str(c['_id'])
+        del c['_id']
+        d.append(c)
 
-    return render_template('congresses.html', congresses=congresses)
+    return render_template('congresses.html', congresses=congresses,data=json.dumps(d) )
 
 
 @app.route('/congresses.json', methods=['GET'])

@@ -7,12 +7,14 @@
 {% endblock %}
 
 {% block css %}
-    <link href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.css" media="all" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block content %}
         
     <h1>Congresses</h1>
+
+    <svg id="chart" style='height:500px'></svg>
 
     <div class="panel panel-default">
         <div class="panel-heading">Congresses</div>
@@ -21,13 +23,13 @@
         </div>
         <table class="table">
             <tr>
-                <th>Number</th>
+                <th>Congress</th>
                 <th>House</th>
-                <th>House Res</th>
-                <th>House J Res</th>
+                <th>House Resolution</th>
+                <th>House Joint</th>
                 <th>Senate</th>
-                <th>Senate Res</th>
-                <th>Senate J Res</th>
+                <th>Senate Resolution</th>
+                <th>Senate Joint</th>
             </tr>
         {% for congress in congresses %}
             <tr>
@@ -49,6 +51,12 @@
 {% endblock %}
 
 {% block js %}
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.min.js"> </script>
+    <script>
+        // Could have made this a json call but why? I already have the data - no point in making another trip.
+        data = {{data|safe}}
+    </script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.js" charset="utf-8"></script>
+    <script src="/static/js/congress_chart.js" charset="utf-8"></script>
 {% endblock %}
 
