@@ -70,6 +70,7 @@ def process_bills(subset):
 
                 # Check if the bill has a sponsor if so give 'em credit
                 if sponsor and sponsor.has_key("state"):
+                    sta
                     db.states.update(
                         { "name" : sponsor['state'] },
                         { "$inc" : { "sponsor_count" : 1} },
@@ -201,6 +202,11 @@ if __name__ == '__main__':
     jobs = []
     #dirs = os.walk(DATA_DIR).next()[1]
     #dirs = [103,104,105,106,107,108,109,110,111,112,113]
+
+
+    state_sponser_count = {}
+
+
     dirs = []
     num = len(dirs)
     procs = num / 4
