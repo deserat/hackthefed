@@ -69,11 +69,11 @@ def process_bills(subset):
     for each peace of legislation. """
 
     for subdir in subset:
+        print subdir
         this_dir = "{0}/{1}/bills".format(DATA_DIR, subdir)
         for root, dirs, files in os.walk(this_dir):
             if "data.json" in files and "text-versions" not in root:
                 file_path = "{0}/data.json".format(root)
-                print file_path
                 bill = json.loads( open(file_path, 'r').read() )
                 
                 congress = bill.get("congress", "0")
@@ -182,9 +182,10 @@ def process_bills(subset):
 
                     
                 #print bill.get('subjects_top_term', None)
-                if bill.get('subjects_top_term', None):
+                top_term = bill.get('subjects_top_term', None)
+                if top_term:
                     db.subject.update(
-                        {"name": subject},
+                        {"name": top_term},
                         {
                             "$inc": {
                                 "top_count": 1

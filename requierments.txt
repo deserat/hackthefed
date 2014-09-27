@@ -15,3 +15,4 @@ pytz==2014.4
 pyzmq==14.3.1
 numpy==1.8.2
 gnureadline==6.3.3
+pyyaml==3.11

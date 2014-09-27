@@ -70,7 +70,6 @@ def process_bills(subset):
 
                 # Check if the bill has a sponsor if so give 'em credit
                 if sponsor and sponsor.has_key("state"):
-                    sta
                     db.states.update(
                         { "name" : sponsor['state'] },
                         { "$inc" : { "sponsor_count" : 1} },
