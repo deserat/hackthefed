@@ -64,7 +64,7 @@ def process_bills(subset):
                 file_path = "{0}/data.json".format(root)
 
                 bill = json.loads( open(file_path, 'r').read() )
-                congress = bill.get("congress", "0")
+                congress = int(bill.get("congress", "0"))
                 conn.hincrby(congress, bill.get("bill_type", "NO TYPE"), 1 )
 
 

@@ -76,11 +76,10 @@ def process_bills(subset):
                 file_path = "{0}/data.json".format(root)
                 bill = json.loads( open(file_path, 'r').read() )
                 
-                congress = bill.get("congress", "0")
-                print congress
+                congress = int(bill.get("congress", 0))
 
                 db.congress.update(
-                    {"name":congress},
+                    {"name": congress},
                     {
                         "$inc": { bill.get("bill_type", "NO TYPE") : 1 }
                     }
@@ -154,7 +153,7 @@ def process_bills(subset):
                         {
                             "sub"
                             "bill_id" : bill.get("bill_id", "NOID"),
-                            "type" : bill.get('bill_type',None),
+                            "type" : bill.get('bill_type', None),
                             "title": bill.get("official_title", "TITLE") # TODO:  make a function that gets one of the titles
                         }
                     )
