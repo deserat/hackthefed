@@ -60,7 +60,7 @@ def chunks(l, n):
 
 def create_congresses(congresses):
     for c in congresses:
-        db.congress.insert({"name":c})
+        db.congress.insert({"name":int(c)})
         db.congress.create_index("name")
 
 
