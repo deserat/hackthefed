@@ -1,5 +1,5 @@
 import pandas as pd
-import yaml # Ruby users should die.
+import yaml  # Ruby users should die.
 
 DATA_DIR = "./data"
 
@@ -7,20 +7,26 @@ DATA_DIR = "./data"
 # Legislator Functions
 #
 
+
 def import_legislators():
     """
     Read the legislators from the csv files into a single Dataframe. Intended for importing new data.
     """
     current = pd.DataFrame().from_csv("{0}/congress-legislators/legislators-current.csv".format(DATA_DIR))
     historic = pd.DataFrame().from_csv("{0}/congress-legislators/legislators-historic.csv".format(DATA_DIR))
+    legislators = current.append(historic)
 
-    return current.append(historic)
+    # more than one thing has a thomas_id so it's kinda usless in our model
+    legislators['legislator_id'] = legislators['thomas_id']
+
+    return legislators
+
 
 def save_legislators(legislators):
     """
     Output legislators datafrom to csv.
     """
-    legislators.to_csv("{0}/csv/legislators.csv".format(DATA_DIR))
+    legislators.to_csv("{0}/csv/legislators.csv".format(DATA_DIR),encoding='utf-8')
 
 
 #
@@ -47,39 +53,53 @@ def import_committees():
 
         com['committee_id'] = com['thomas_id']
 
-        if com.has_key('subcommittees'):
+        if 'subcommittees' in com:
 
             # process sub committees into separate DataFrame
             for subcom in com.get('subcommittees'):
                 subcom['committee_id'] = com['thomas_id']  # we use committee_id so we can easily merge dataframes
                 subcom['subcommittee_id'] = "{0}-{1}".format(subcom['committee_id'], subcom['thomas_id'])
-                print subcom
                 subcommittees.append(subcom)
 
             del com['subcommittees']
-
-    print subcommittees
 
     committees_df = pd.DataFrame(committees)
     subcommittees_df = pd.DataFrame(subcommittees)
 
     return [committees_df, subcommittees_df]
 
+
 def save_committees(committees):
     """
     Output legislators datafrom to csv.
     """
-    committees.to_csv("{0}/csv/committees.csv".format(DATA_DIR))
+    committees.to_csv("{0}/csv/committees.csv".format(DATA_DIR), encoding='utf-8')
+
 
 def save_subcommittees(subcommittees):
     """
     Output legislators datafrom to csv.
     """
-    subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR))
+    subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR),encoding='utf-8')
 
 
 def import_committee_membership():
     with open("{0}/congress-legislators/committee-membership-current.yaml".format(DATA_DIR), 'r') as stream:
         c_membership = yaml.load(stream)
 
-    return pd.DataFrame(c_membership)
+    members = []
+
+    for c in  c_membership:
+        for member in c_membership[c]:
+            member['committee_id'] = c
+            member['title'] = member.get('title', 'Member')
+            member['party_position'] = member['party']
+            member['legislator_id'] = int(member['thomas'])
+            del(member['party'])
+            del(member['thomas'])
+            members.append(member)
+
+    return pd.DataFrame(members)
+
+def save_committee_membership(membership):
+    membership.to_csv("{0}/csv/membership.csv".format(DATA_DIR),encoding='utf-8')
