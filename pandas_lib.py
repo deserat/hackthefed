@@ -26,7 +26,7 @@ def save_legislators(legislators):
     """
     Output legislators datafrom to csv.
     """
-    legislators.to_csv("{0}/csv/legislators.csv".format(DATA_DIR),encoding='utf-8')
+    legislators.to_csv("{0}/csv/legislators.csv".format(DATA_DIR), encoding='utf-8')
 
 
 #
@@ -80,7 +80,7 @@ def save_subcommittees(subcommittees):
     """
     Output legislators datafrom to csv.
     """
-    subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR),encoding='utf-8')
+    subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR), encoding='utf-8')
 
 
 def import_committee_membership():
@@ -89,7 +89,7 @@ def import_committee_membership():
 
     members = []
 
-    for c in  c_membership:
+    for c in c_membership:
         for member in c_membership[c]:
             member['committee_id'] = c
             member['title'] = member.get('title', 'Member')
@@ -101,5 +101,6 @@ def import_committee_membership():
 
     return pd.DataFrame(members)
 
+
 def save_committee_membership(membership):
-    membership.to_csv("{0}/csv/membership.csv".format(DATA_DIR),encoding='utf-8')
+    membership.to_csv("{0}/csv/membership.csv".format(DATA_DIR), encoding='utf-8')
