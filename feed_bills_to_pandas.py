@@ -78,10 +78,7 @@ def crawl_congresses(congresses):
 if __name__ == '__main__':
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
-    #dirs = [103,104,105,106,107,108,109,110,111,112,113]
     num = len(dirs)
     procs = num / 4
-    for subset in list(chunks(dirs, procs)):
-        p = multiprocessing.Process(target=crawl_congresses, args=(subset,))
-        jobs.append(p)
-        p.start()
+    p = Pool(8)
+    p.map(crawl_congresses, dirs)
