@@ -84,4 +84,3 @@ if __name__ == '__main__':
         p = multiprocessing.Process(target=crawl_congresses, args=(subset,))
         jobs.append(p)
         p.start()
-
