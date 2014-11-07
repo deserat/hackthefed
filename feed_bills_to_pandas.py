@@ -1,8 +1,10 @@
 import os
 import json
 import multiprocessing
+from multiprocessing import Pool
 import pandas as pd
 import numpy as np
+
 
 def extract_legislation(bill):
     """
@@ -45,10 +47,10 @@ def crawl_congresses(congresses):
     # DataFrames we are going to return see https://github.com/deserat/hackthefed/wiki/Legislative%20DataModel
     # for more info
 
-    ## Core Data
+    # Core Data
     legislation = pd.DataFrame()
 
-    ## Relationships
+    # Relationships
 
     bills_per_congress = pd.DataFrame()
     sponsors = pd.DataFrame()
@@ -58,7 +60,7 @@ def crawl_congresses(congresses):
     subjects = pd.DataFrame()
     titles = pd.DataFame()
 
-    ## Change Log
+    # Change Log
     actions = pd.DataFrame()
 
     for congress in congresses:
@@ -71,7 +73,6 @@ def crawl_congresses(congresses):
                 # let's start with just the legislative information
 
                 extract_legislation(bill)
-
 
 
 if __name__ == '__main__':
