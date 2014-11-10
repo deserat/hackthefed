@@ -1,14 +1,18 @@
 import os
 import json
 import multiprocessing
-from multiprocessing import Pool
 import pandas as pd
 import numpy as np
+
+from multiprocessing import Pool
+
+
+DATA_DIR = "./data/congress"
 
 
 def extract_legislation(bill):
     """
-    Returns a array of the legislation fields we need for our legislation DataFrame
+    Returns an array of the legislation fields we need for our legislation DataFrame
 
     :param bill:
     :return list:
@@ -36,7 +40,7 @@ def extract_legislation(bill):
     return record
 
 
-def crawl_congresses(congresses):
+def crawl_congresses(congress):
     """
     A container function that recurses a set of directory and extracts data data from the
     legislation contained therein.
@@ -58,27 +62,25 @@ def crawl_congresses(congresses):
     committees = pd.DataFrame()
     ammendments = pd.DataFrame()
     subjects = pd.DataFrame()
-    titles = pd.DataFame()
+    titles = pd.DataFrame()
 
     # Change Log
     actions = pd.DataFrame()
 
-    for congress in congresses:
-        bills = "{0}/{1}/bills".format(DATA_DIR, congress)
-        for root, dirs, files in os.walk(bills):
-            if "data.json" in files and "text-versions" not in root:
-                file_path = "{0}/data.json".format(root)
-                bill = json.loads(open(file_path, 'r').read())
+    bills = "{0}/{1}/bills".format(DATA_DIR, congress)
+    for root, dirs, files in os.walk(bills):
+        if "data.json" in files and "text-versions" not in root:
+            file_path = "{0}/data.json".format(root)
+            bill = json.loads(open(file_path, 'r').read())
 
-                # let's start with just the legislative information
+            # let's start with just the legislative information
 
-                extract_legislation(bill)
+            extract_legislation(bill)
 
 
 if __name__ == '__main__':
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
-    num = len(dirs)
-    procs = num / 4
-    p = Pool(8)
+    p = Pool(2)
+    print dirs
     p.map(crawl_congresses, dirs)
