@@ -165,8 +165,8 @@ def process_bills(subset):
                             db.legislator_subjects.update(
                                 {"thomas_id": sponsor['thomas_id'] },
                                 {
-                                    "$inc" : {
-                                        "{0}".format(subject) : 1
+                                    "$inc": {
+                                        "{0}".format(subject): 1
                                     }
                                 },
                                 True,
@@ -177,7 +177,7 @@ def process_bills(subset):
                     else:
                         print "Bill {0}".format(bill.get("official_title", "TITLE"))
 
-                #print bill.get('subjects_top_term', None)
+                # print bill.get('subjects_top_term', None)
                 top_term = bill.get('subjects_top_term', None)
                 if top_term:
                     db.subject.update(
