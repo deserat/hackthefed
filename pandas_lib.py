@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import yaml  # Ruby users should die.
 
@@ -81,11 +82,13 @@ def save_subcommittees(subcommittees):
     """
     subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR), encoding='utf-8')
 
-def make_congress_dir():
+def make_congress_dir(congress):
     congress_dir = "{0}/csv/{1}".format(DATA_DIR,congress)
     path = os.path.dirname(congress_dir)
-    if not os.path.exists(path):
-        os.makedirs(path)
+    print "{0} path exists".format(congress_dir)
+    if not os.path.exists(congress_dir):
+        os.mkdir(congress_dir)
+    return congress_dir
 
 
 def save_congress(congress):

@@ -58,7 +58,7 @@ def crawl_congress(congress):
     :return dict: A Dictionary of DataFrames
     """
 
-    congress_obj = Congress(congress.name)
+    congress_obj = Congress(congress)
     # We construct lists that can be used to construct dataframes.  Adding to
     # dataframes is expensive so we don't do  that.
 
@@ -91,13 +91,13 @@ def crawl_congress(congress):
             legislation.append(record)
 
     congress_obj.legislation = pd.DataFrame(legislation)
-    pl.save(congress_obj)
+    pl.save_congress(congress_obj)
     # print "{0} - {1}".format(congress, len(legislation))
 
 
 if __name__ == '__main__':
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
-    p = Pool(2)
+    p = Pool(12)
     print dirs
     p.map(crawl_congress, dirs)
