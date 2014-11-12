@@ -54,7 +54,6 @@ def import_committees():
         com['committee_id'] = com['thomas_id']
 
         if 'subcommittees' in com:
-
             # process sub committees into separate DataFrame
             for subcom in com.get('subcommittees'):
                 subcom['committee_id'] = com['thomas_id']  # we use committee_id so we can easily merge dataframes
@@ -81,6 +80,16 @@ def save_subcommittees(subcommittees):
     Output legislators datafrom to csv.
     """
     subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR), encoding='utf-8')
+
+
+def save_congress(congress):
+    congress_dir = "{0}/csv/{1}".format(DATA_DIR, congress['name'])
+    path = os.path.dirname(congress_dir)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir))
+
+
 
 
 def import_committee_membership():

@@ -3,11 +3,21 @@ import json
 import multiprocessing
 import pandas as pd
 import numpy as np
+import pandas_lib as pl
 
 from multiprocessing import Pool
 
 
 DATA_DIR = "./data/congress"
+OUT_DIR = "./data/csv"
+
+
+class Congress(object):
+    name = None
+    legislation = None
+
+    def __init__(self, name):
+        self.name = name
 
 
 def extract_legislation(bill):
@@ -40,7 +50,7 @@ def extract_legislation(bill):
     return record
 
 
-def crawl_congresses(congress):
+def crawl_congress(congress):
     """
     A container function that recurses a set of directory and extracts data data from the
     legislation contained therein.
@@ -48,26 +58,28 @@ def crawl_congresses(congress):
     :return dict: A Dictionary of DataFrames
     """
 
-    # DataFrames we are going to return see https://github.com/deserat/hackthefed/wiki/Legislative%20DataModel
-    # for more info
+    congress_obj = Congress(congress.name)
+    # We construct lists that can be used to construct dataframes.  Adding to
+    # dataframes is expensive so we don't do  that.
 
     # Core Data
-    legislation = pd.DataFrame()
+    legislation = []
 
     # Relationships
-
-    bills_per_congress = pd.DataFrame()
-    sponsors = pd.DataFrame()
-    cosponsors = pd.DataFrame()
-    committees = pd.DataFrame()
-    ammendments = pd.DataFrame()
-    subjects = pd.DataFrame()
-    titles = pd.DataFrame()
+    bills_per_congress = []
+    sponsors = []
+    cosponsors = []
+    committees = []
+    ammendments = []
+    subjects = []
+    titles = []
 
     # Change Log
     actions = pd.DataFrame()
 
     bills = "{0}/{1}/bills".format(DATA_DIR, congress)
+    index = 0
+
     for root, dirs, files in os.walk(bills):
         if "data.json" in files and "text-versions" not in root:
             file_path = "{0}/data.json".format(root)
@@ -75,7 +87,12 @@ def crawl_congresses(congress):
 
             # let's start with just the legislative information
 
-            extract_legislation(bill)
+            record = extract_legislation(bill)
+            legislation.append(record)
+
+    congress_obj.legislation = pd.DataFrame(legislation)
+    pl.save(congress_obj)
+    # print "{0} - {1}".format(congress, len(legislation))
 
 
 if __name__ == '__main__':
@@ -83,4 +100,4 @@ if __name__ == '__main__':
     dirs = os.walk(DATA_DIR).next()[1]
     p = Pool(2)
     print dirs
-    p.map(crawl_congresses, dirs)
+    p.map(crawl_congress, dirs)
