@@ -83,11 +83,9 @@ def save_subcommittees(subcommittees):
 
 
 def save_congress(congress):
-    congress_dir = "{0}/csv/{1}".format(DATA_DIR, congress['name'])
-    path = os.path.dirname(congress_dir)
-    if not os.path.exists(path):
-        os.makedirs(path)
-    congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir))
+    congress_dir = make_congress_dir(congress.name)
+    print congress.legislation[:3]
+    congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir),encoding='utf-8')
 
 
 
