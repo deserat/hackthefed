@@ -82,6 +82,10 @@ def save_subcommittees(subcommittees):
     """
     subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR), encoding='utf-8')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0df1f45f3582f150b17331d21fde49163518c135
 def make_congress_dir(congress):
     congress_dir = "{0}/csv/{1}".format(DATA_DIR,congress)
     path = os.path.dirname(congress_dir)
@@ -89,7 +93,15 @@ def make_congress_dir(congress):
     if not os.path.exists(congress_dir):
         os.mkdir(congress_dir)
     return congress_dir
+<<<<<<< HEAD
+=======
 
+>>>>>>> 0df1f45f3582f150b17331d21fde49163518c135
+
+def save_congress(congress):
+    congress_dir = make_congress_dir(congress.name)
+    print congress.legislation[:3]
+    congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir),encoding='utf-8')
 
 def save_congress(congress):
     congress_dir = make_congress_dir(congress.name)
