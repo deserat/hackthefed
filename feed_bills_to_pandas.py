@@ -59,10 +59,10 @@ def crawl_congress(congress):
     :return dict: A Dictionary of DataFrames
     """
 
-    logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.INFO)
+    #logger = multiprocessing.log_to_stderr()
+    #logger.setLevel(logging.INFO)
 
-    logger.info(congress)
+    logger.info("Begining congress {0}".format(congress))
 
     congress_obj = Congress(congress)
     # We construct lists that can be used to construct dataframes.  Adding to
@@ -86,18 +86,28 @@ def crawl_congress(congress):
     bills = "{0}/{1}/bills".format(DATA_DIR, congress)
     index = 0
 
+    files_processed = 0
+
     for root, dirs, files in os.walk(bills):
         if "data.json" in files and "text-versions" not in root:
-            file_path = "{0}/data.json".format(root)
-            bill = json.loads(open(file_path, 'r').read())
+            try:
+                file_path = "{0}/data.json".format(root)
+                bill = json.loads(open(file_path, 'r').read())
+                logger.debug(file_path)
+
 
             # let's start with just the legislative information
 
-            record = extract_legislation(bill)
-            legislation.append(record)
+                record = extract_legislation(bill)
+                legislation.append(record)
+                files_processed += 1
+            except Error as e:
+                logger.info(e)
 
     congress_obj.legislation = pd.DataFrame(legislation)
     pl.save_congress(congress_obj)
+
+    logger.info("Processed {0} in Congress {1}".format(files_processed, congress))
     # print "{0} - {1}".format(congress, len(legislation))
 
 
@@ -107,6 +117,7 @@ if __name__ == '__main__':
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
     p = Pool(12)
+
     try:
         p.map_async(crawl_congress, dirs).get(999999)
     except KeyboardInterrupt:
