@@ -3,6 +3,7 @@ import json
 import multiprocessing
 import pandas as pd
 import numpy as np
+import logging
 import pandas_lib as pl
 
 from multiprocessing import Pool
@@ -52,11 +53,16 @@ def extract_legislation(bill):
 
 def crawl_congress(congress):
     """
-    A container function that recurses a set of directory and extracts data data from the
-    legislation contained therein.
+    A container function that recurses a set of directory and extracts data from
+    the legislation contained therein.
 
     :return dict: A Dictionary of DataFrames
     """
+
+    logger = multiprocessing.log_to_stderr()
+    logger.setLevel(logging.INFO)
+
+    logger.info(congress)
 
     congress_obj = Congress(congress)
     # We construct lists that can be used to construct dataframes.  Adding to
@@ -96,8 +102,14 @@ def crawl_congress(congress):
 
 
 if __name__ == '__main__':
+    logger = multiprocessing.log_to_stderr()
+    logger.setLevel(logging.INFO)
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
     p = Pool(12)
-    print dirs
-    p.map(crawl_congress, dirs)
+    try:
+        p.map_async(crawl_congress, dirs).get(999999)
+    except KeyboardInterrupt:
+        pool.terminate()
+        print "You cancelled the program!"
+        sys.exit(1)
