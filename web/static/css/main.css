@@ -1,0 +1,3 @@
+table tr:only-of-type(odd) {
+    background-color:#222;
+};

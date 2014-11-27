@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}:: Legslators{% endblock %}
+
+{% block seo %}
+    <meta keywords="Congress, Legislators">
+    <meta description="A list of congressional legislators">
+{% endblock %}
+
+{% block content %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Legislators</div>
+        <div class="panel-body">
+           <p>The Number of bills sponsored and co-sponsored by legislators .</p>
+        </div>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Bills Sponsored</th>
+                <th>Bills Cosponsored</th>
+            </tr> 
+        {% for l in legislators %}
+            <tr>
+                <td>{{ l.first_name }} {{ l.last_name }}</td>
+                <td>{{ l.sponsor_count }}</td>
+                <td>{{ l.cosponsor_count }}</td>
+            </tr>
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}

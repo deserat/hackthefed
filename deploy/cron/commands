@@ -1,0 +1,2 @@
+rsync -avz --delete govtrack.us::govtrackdata/congress /mnt/data/
+rsync -avz --delete govtrack.us::govtrackdata/congress-legislators /mnt/data/

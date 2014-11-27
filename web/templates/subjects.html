@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Subjects</title>
+    </head>
+    <body>
+        <h2>Subjects</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+                <th>Top Count</th>
+            </tr> 
+        {% for s in subjects %}
+            <tr id="subject-{{s._id}}">
+                <td><a href="/subjects/{{ s._id }}/">{{ s.name }}</a></td>
+                <td>{{ s.count }}</td>
+                <td>{{ s.top_count }}</td>
+            </tr>
+                
+        {% else %}
+            <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+        {% endfor %}
+        
+        </table>
+    </body>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
+</html>

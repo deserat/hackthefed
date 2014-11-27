@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}:: Subjects :: {% endblock %}
+
+{% block seo %}
+    <meta keywords="Congresses, Statistics, Subjects, Legislation">
+{% endblock %}
+
+{% block css %}
+    <link href="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.css" media="all" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+        
+    <h1>Congresses</h1>
+
+    <svg id="chart" style='height:500px'></svg>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Congresses</div>
+        <div class="panel-body">
+            <p>
+                Table Depicting the number and type of pieces of legislation produced by each congress. Data before the 93 congresss is of questionable accuracy. Data for the 93rd congress and later is reliable. There is huge spike in the amount of Legislation produced by the House of Represenatives for the 93rd, 94th, and 95th. I've not had a chance to dig deeper yet. Seems to correspond to Nixon and Vietnam but that's just a guess.
+            </p>
+        </div>
+        <table class="table">
+            <tr>
+                <th>Congress</th>
+                <th>House</th>
+                <th>House Resolution</th>
+                <th>House Joint</th>
+                <th>Senate</th>
+                <th>Senate Resolution</th>
+                <th>Senate Joint</th>
+            </tr>
+        {% for congress in congresses %}
+            <tr>
+                <td>{{ congress.name }}</td>
+                <td>{{ congress.hr }}</td>
+                <td>{{ congress.hres }}</td>
+                <td>{{ congress.hjres }}</td>
+                <td>{{ congress.s }}</td>
+                <td>{{ congress.sres }}</td>
+                <td>{{ congress.sjres }}</td>
+
+            </tr>    
+        {% else %}
+            <li><em>Unbelievable.  No entries here so far</em></li>
+        {% endfor %}
+
+        </table>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        // Could have made this a json call but why? I already have the data - no point in making another trip.
+        data = {{data|safe}}
+    </script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.js" charset="utf-8"></script>
+    <script src="/static/js/congress_chart.js" charset="utf-8"></script>
+{% endblock %}
+

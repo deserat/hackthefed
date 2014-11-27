@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Congress {% block title %}{% endblock %}</title>
+        {% block seo %}
+            <meta keywords="Congressional Statistics">
+            <meta description="Quantifying Congressional Activity">
+        {% endblock %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {% block css %}
+        {% endblock %}
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/paper/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+
+        {% block social %}
+            <meta og:title="Congressional Statistics">
+            <meta og:description="Congressional Statistics">
+        {% endblock %}
+
+        <link href="/static/css/main.css" type="text/stylesheet">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    <ul>
+                        <li><a href="/states">States</a></li>
+                        <li><a href="/legislators">Legislators</a></li>
+                        <li><a href="/congresses">Congresses</a></li>
+                        <li><a href="/committees">Committees</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-10">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js"> </script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script src="/static/js/main.js"></script>
+        
+        {% block js %}
+        {% endblock %}
+        
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-55243559-1', 'auto');
+          ga('send', 'pageview');
+
+        </script>
+    </body>
+<html>
