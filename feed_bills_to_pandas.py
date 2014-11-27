@@ -23,7 +23,7 @@ class Congress(object):
 
 def extract_legislation(bill):
     """
-    Returns an array of the legislation fields we need for our legislation DataFrame
+    Returns a list of the legislation fields we need for our legislation DataFrame
 
     :param bill:
     :return list:
@@ -32,6 +32,7 @@ def extract_legislation(bill):
     record = []
     record.append(bill.get('congress', None))
     record.append(bill.get('bill_id', None))
+    record.append(bill.get('bill_type', None))
     record.append(bill.get('enacted_as', None))
     record.append(bill.get('active', None))
     record.append(bill.get('active_at', None))
@@ -51,6 +52,21 @@ def extract_legislation(bill):
     return record
 
 
+def extract_sponsor(bill):
+    """
+    Return a list of the fields we need to map a sponser to a bill
+    """
+    logger.debug("Extracting Sponsor")
+    sponsor_map = []
+    sponsor = bill.get('sponsor', None)
+    if sponsor:
+        sponsor_map.append(sponsor.get('type'))
+        sponsor_map.append(sponsor.get('thomas_id'))
+        sponsor_map.append(bill.get('bill_id'))
+    logger.debug("END Extracting Sponsor")
+    return sponsor_map
+
+
 def crawl_congress(congress):
     """
     A container function that recurses a set of directory and extracts data from
@@ -60,11 +76,12 @@ def crawl_congress(congress):
     """
 
     logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     logger.info(congress)
 
     congress_obj = Congress(congress)
+
     # We construct lists that can be used to construct dataframes.  Adding to
     # dataframes is expensive so we don't do  that.
 
@@ -95,15 +112,19 @@ def crawl_congress(congress):
 
             record = extract_legislation(bill)
             legislation.append(record)
+            sponsor = extract_sponsor(bill)
+            sponsors.append(sponsor)
 
     congress_obj.legislation = pd.DataFrame(legislation)
+    congress_obj.sponsors = pd.DataFrame(sponsors)
+
     pl.save_congress(congress_obj)
     # print "{0} - {1}".format(congress, len(legislation))
 
 
 if __name__ == '__main__':
     logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
     p = Pool(12)

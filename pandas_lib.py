@@ -93,6 +93,7 @@ def make_congress_dir(congress):
 def save_congress(congress):
     congress_dir = make_congress_dir(congress.name)
     congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
+    congress.sponsors.to_csv("{0}/sponsor_map.csv".format(congress_dir), encoding='utf-8')
 
 def import_committee_membership():
     with open("{0}/congress-legislators/committee-membership-current.yaml".format(DATA_DIR), 'r') as stream:
