@@ -82,6 +82,7 @@ def save_subcommittees(subcommittees):
     """
     subcommittees.to_csv("{0}/csv/subcommittees.csv".format(DATA_DIR), encoding='utf-8')
 
+
 def make_congress_dir(congress):
     congress_dir = "{0}/csv/{1}".format(DATA_DIR,congress)
     path = os.path.dirname(congress_dir)
@@ -90,10 +91,14 @@ def make_congress_dir(congress):
         os.mkdir(congress_dir)
     return congress_dir
 
+
 def save_congress(congress):
     congress_dir = make_congress_dir(congress.name)
     congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
     congress.sponsors.to_csv("{0}/sponsor_map.csv".format(congress_dir), encoding='utf-8')
+    congress.cosponsors.to_csv("{0}/cosponsor_map.csv".format(congress_dir), encoding='utf-8')
+    congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
+
 
 def import_committee_membership():
     with open("{0}/congress-legislators/committee-membership-current.yaml".format(DATA_DIR), 'r') as stream:
