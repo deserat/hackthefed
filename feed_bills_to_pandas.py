@@ -63,8 +63,33 @@ def extract_sponsor(bill):
         sponsor_map.append(sponsor.get('type'))
         sponsor_map.append(sponsor.get('thomas_id'))
         sponsor_map.append(bill.get('bill_id'))
+        sponsor_map.append(sponsor.get('district'))
+        sponsor_map.append(sponsor.get('state'))
     logger.debug("END Extracting Sponsor")
     return sponsor_map
+
+
+def extract_cosponsors(bill):
+    """
+    Return a list of list relating cosponsors to legislation.
+    """
+    logger.debug("Extracting Cosponsors")
+    cosponsor_map = []
+    cosponsors = bill.get('cosponsors', [])
+    for co in cosponsors:
+        cosponsor_map.append(co.get('thomas_id'))
+        cosponsor_map.append(co.get('bill_id'))
+        cosponsor_map.append(co.get('district'))
+        cosponsor_map.append(co.get('state'))
+    logger.debug("End Extractioning Cosponsors")
+    return cosponsor_map
+
+
+def extract_events(bill):
+    """
+    Returns all events  from legislations. Thing of this as a log for congress.
+    """
+    return [()]
 
 
 def crawl_congress(congress):
@@ -78,7 +103,7 @@ def crawl_congress(congress):
     logger = multiprocessing.log_to_stderr()
     logger.setLevel(logging.DEBUG)
 
-    logger.info(congress)
+    logger.info("Begin processing {0}".format(congress))
 
     congress_obj = Congress(congress)
 
@@ -96,6 +121,7 @@ def crawl_congress(congress):
     ammendments = []
     subjects = []
     titles = []
+    events = []
 
     # Change Log
     actions = pd.DataFrame()
@@ -112,11 +138,20 @@ def crawl_congress(congress):
 
             record = extract_legislation(bill)
             legislation.append(record)
+
             sponsor = extract_sponsor(bill)
             sponsors.append(sponsor)
 
+            cosponsor = extract_sponsor(bill)
+            cosponsors.append(cosponsor)
+
+            evts = extract_events(bill)
+            events.append(evts)
+
     congress_obj.legislation = pd.DataFrame(legislation)
     congress_obj.sponsors = pd.DataFrame(sponsors)
+    congress_obj.cosponsors = pd.DataFrame(cosponsors)
+    congress_obj.events = pd.DataFrame(events)
 
     pl.save_congress(congress_obj)
     # print "{0} - {1}".format(congress, len(legislation))
