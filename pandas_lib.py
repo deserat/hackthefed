@@ -97,7 +97,7 @@ def save_congress(congress):
     congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
     congress.sponsors.to_csv("{0}/sponsor_map.csv".format(congress_dir), encoding='utf-8')
     congress.cosponsors.to_csv("{0}/cosponsor_map.csv".format(congress_dir), encoding='utf-8')
-    congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
+    #congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
 
 
 def import_committee_membership():
