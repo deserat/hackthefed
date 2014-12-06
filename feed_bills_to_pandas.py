@@ -6,6 +6,8 @@ import numpy as np
 import logging
 import pandas_lib as pl
 
+
+from datetime import datetime, date
 from multiprocessing import Pool
 
 
@@ -19,6 +21,14 @@ class Congress(object):
 
     def __init__(self, name):
         self.name = name
+
+
+def datestring_to_datetime(string):
+    d_array = [int(x) for x in "2011-02-03".split("-")].extend([0, 0])
+    if d_array:
+        return datetime(*d_array)
+    else:
+        return None
 
 
 def extract_legislation(bill):
@@ -77,19 +87,39 @@ def extract_cosponsors(bill):
     cosponsor_map = []
     cosponsors = bill.get('cosponsors', [])
     for co in cosponsors:
-        cosponsor_map.append(co.get('thomas_id'))
-        cosponsor_map.append(co.get('bill_id'))
-        cosponsor_map.append(co.get('district'))
-        cosponsor_map.append(co.get('state'))
+        co_list = []
+        co_list.append(co.get('thomas_id'))
+        co_list.append(bill.get('bill_id'))
+        co_list.append(co.get('district'))
+        co_list.append(co.get('state'))
+        cosponsor_map.append(co_list)
     logger.debug("End Extractioning Cosponsors")
     return cosponsor_map
 
 
+# Really don't like how this is comming together.....
 def extract_events(bill):
     """
     Returns all events  from legislations. Thing of this as a log for congress.
+
+    There are alot of events that occur around legislation. For now we are
+    going to kepe it simple. Introduction, cosponsor, votes dates
     """
-    return [()]
+    events = []
+    logger.debug(events)
+
+    bill_id = bill.get('bill_id', None)
+    if bill_id:
+        logger.debug('got bill id')
+        intro_date = datestring_to_datetime(bill.get('introduced_at', None))
+        sponsor = bill.get('sponsor', None)
+        type = sponsor.get('type', None)
+        id = bill.get('thomas_id', None)
+        events.append((bill_id, 'introduced', type, id, intro_date))
+
+    logger.debug(events)
+
+    return events
 
 
 def crawl_congress(congress):
@@ -101,7 +131,7 @@ def crawl_congress(congress):
     """
 
     logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     logger.info("Begin processing {0}".format(congress))
 
@@ -142,16 +172,23 @@ def crawl_congress(congress):
             sponsor = extract_sponsor(bill)
             sponsors.append(sponsor)
 
-            cosponsor = extract_sponsor(bill)
-            cosponsors.append(cosponsor)
+            cosponsor = extract_cosponsors(bill)
+            cosponsors.extend(cosponsor)
 
-            evts = extract_events(bill)
-            events.append(evts)
+            #evts = extract_events(bill)
+            #events.append(evts)
 
     congress_obj.legislation = pd.DataFrame(legislation)
+    congress_obj.legislation.columns = [
+        'congress', 'bill_id', 'bill_type', 'enacted_as', 'active', 'active_at',
+        'awaiting_signature', 'enacted', 'vetoed', 'introduced_at', 'number',
+        'official_title', 'popular_title', 'short_title', 'status', 'status_at',
+        'top_subject', 'updated_at'
+    ]
+
     congress_obj.sponsors = pd.DataFrame(sponsors)
     congress_obj.cosponsors = pd.DataFrame(cosponsors)
-    congress_obj.events = pd.DataFrame(events)
+    # congress_obj.events = pd.DataFrame(events)
 
     pl.save_congress(congress_obj)
     # print "{0} - {1}".format(congress, len(legislation))
