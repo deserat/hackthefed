@@ -197,21 +197,25 @@ def crawl_congress(congress):
             bill = json.loads(open(file_path, 'r').read())
 
             # let's start with just the legislative information
+            try:
+                record = extract_legislation(bill)
+                legislation.append(record)
 
-            record = extract_legislation(bill)
-            legislation.append(record)
+                sponsor = extract_sponsor(bill)
+                sponsors.append(sponsor)
 
-            sponsor = extract_sponsor(bill)
-            sponsors.append(sponsor)
+                cosponsor = extract_cosponsors(bill)
+                cosponsors.extend(cosponsor)
 
-            cosponsor = extract_cosponsors(bill)
-            cosponsors.extend(cosponsor)
+                # evts = extract_events(bill)
+                # events.append(evts)
 
-            # evts = extract_events(bill)
-            # events.append(evts)
-
-            committee = extract_committees(bill)
-            committees.extend(committee)
+                committee = extract_committees(bill)
+                committees.extend(committee)
+            except Exception as e:
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    print(exc_type, fname, exc_tb.tb_lineno)
 
     congress_obj.legislation = pd.DataFrame(legislation)
     congress_obj.legislation.columns = [
