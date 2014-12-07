@@ -84,7 +84,7 @@ def save_subcommittees(subcommittees):
 
 
 def make_congress_dir(congress):
-    congress_dir = "{0}/csv/{1}".format(DATA_DIR,congress)
+    congress_dir = "{0}/csv/{1}".format(DATA_DIR, congress)
     path = os.path.dirname(congress_dir)
     print "{0} path exists".format(congress_dir)
     if not os.path.exists(congress_dir):
@@ -97,7 +97,8 @@ def save_congress(congress):
     congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
     congress.sponsors.to_csv("{0}/sponsor_map.csv".format(congress_dir), encoding='utf-8')
     congress.cosponsors.to_csv("{0}/cosponsor_map.csv".format(congress_dir), encoding='utf-8')
-    #congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
+    # congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
+    congress.committees.to_csv("{0}/committees_map.csv".format(congress_dir), encoding='utf-8')
 
 
 def import_committee_membership():

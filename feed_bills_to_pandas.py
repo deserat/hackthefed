@@ -1,9 +1,12 @@
 import os
+import sys
 import json
 import multiprocessing
+import logging
+import traceback
+import os.path
 import pandas as pd
 import numpy as np
-import logging
 import pandas_lib as pl
 
 
@@ -86,15 +89,44 @@ def extract_cosponsors(bill):
     logger.debug("Extracting Cosponsors")
     cosponsor_map = []
     cosponsors = bill.get('cosponsors', [])
+    bill_id = bill.get('bill_id', None)
     for co in cosponsors:
         co_list = []
         co_list.append(co.get('thomas_id'))
-        co_list.append(bill.get('bill_id'))
+        co_list.append(bill_id)
         co_list.append(co.get('district'))
         co_list.append(co.get('state'))
         cosponsor_map.append(co_list)
     logger.debug("End Extractioning Cosponsors")
     return cosponsor_map
+
+
+def extract_committees(bill):
+    """
+    Returns committee associations from a bill.
+    """
+    bill_id = bill.get('bill_id', None)
+    logger.debug("Extracting Committees for {0}".format(bill_id))
+
+    committees = bill.get('committees', None)
+    committee_map = []
+
+    for c in committees:
+        logger.debug("Processing committee {0}".format(c.get('committee_id')))
+        c_list = []
+        sub = c.get('subcommittee_id')
+        if sub:
+            logger.debug("is subcommittee")
+            c_list.append('subcommittee')
+            sub_id = "{0}-{1}".format(c.get('committee_id'), c.get('subcommittee_id'))
+            logger.debug("Processing subcommittee {0}".format(sub_id))
+            c_list.append(sub_id)
+        else:
+            c_list.append(c.get('committee'))
+            c_list.append(c.get('committee_id'))
+        c_list.append(bill_id)
+        committee_map.append(c_list)
+    return committee_map
 
 
 # Really don't like how this is comming together.....
@@ -131,7 +163,7 @@ def crawl_congress(congress):
     """
 
     logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     logger.info("Begin processing {0}".format(congress))
 
@@ -175,8 +207,11 @@ def crawl_congress(congress):
             cosponsor = extract_cosponsors(bill)
             cosponsors.extend(cosponsor)
 
-            #evts = extract_events(bill)
-            #events.append(evts)
+            # evts = extract_events(bill)
+            # events.append(evts)
+
+            committee = extract_committees(bill)
+            committees.extend(committee)
 
     congress_obj.legislation = pd.DataFrame(legislation)
     congress_obj.legislation.columns = [
@@ -189,6 +224,7 @@ def crawl_congress(congress):
     congress_obj.sponsors = pd.DataFrame(sponsors)
     congress_obj.cosponsors = pd.DataFrame(cosponsors)
     # congress_obj.events = pd.DataFrame(events)
+    congress_obj.committees = pd.DataFrame(committees)
 
     pl.save_congress(congress_obj)
     # print "{0} - {1}".format(congress, len(legislation))
@@ -200,6 +236,7 @@ if __name__ == '__main__':
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
     p = Pool(12)
+
     try:
         p.map_async(crawl_congress, dirs).get(999999)
     except KeyboardInterrupt:
