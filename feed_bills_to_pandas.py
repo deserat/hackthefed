@@ -225,13 +225,18 @@ def crawl_congress(congress):
         'top_subject', 'updated_at'
     ]
 
-    congress_obj.sponsors = pd.DataFrame(sponsors)
-    congress_obj.cosponsors = pd.DataFrame(cosponsors)
-    # congress_obj.events = pd.DataFrame(events)
-    congress_obj.committees = pd.DataFrame(committees)
+    try:
+        congress_obj.sponsors = pd.DataFrame(sponsors)
+        congress_obj.cosponsors = pd.DataFrame(cosponsors)
+        # congress_obj.events = pd.DataFrame(events)
+        congress_obj.committees = pd.DataFrame(committees)
 
-    pl.save_congress(congress_obj)
-    # print "{0} - {1}".format(congress, len(legislation))
+        pl.save_congress(congress_obj)
+        # print "{0} - {1}".format(congress, len(legislation))
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        logger.debug(exc_type, fname, exc_tb.tb_lineno)
 
 
 if __name__ == '__main__':
