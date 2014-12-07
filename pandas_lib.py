@@ -93,12 +93,17 @@ def make_congress_dir(congress):
 
 
 def save_congress(congress):
-    congress_dir = make_congress_dir(congress.name)
-    congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
-    congress.sponsors.to_csv("{0}/sponsor_map.csv".format(congress_dir), encoding='utf-8')
-    congress.cosponsors.to_csv("{0}/cosponsor_map.csv".format(congress_dir), encoding='utf-8')
-    # congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
-    congress.committees.to_csv("{0}/committees_map.csv".format(congress_dir), encoding='utf-8')
+    try:
+        congress_dir = make_congress_dir(congress.name)
+        congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
+        congress.sponsors.to_csv("{0}/sponsor_map.csv".format(congress_dir), encoding='utf-8')
+        congress.cosponsors.to_csv("{0}/cosponsor_map.csv".format(congress_dir), encoding='utf-8')
+        # congress.events.to_csv("{0}/events.csv".format(congress_dir), encoding='utf-8')
+        congress.committees.to_csv("{0}/committees_map.csv".format(congress_dir), encoding='utf-8')
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 
 def import_committee_membership():
