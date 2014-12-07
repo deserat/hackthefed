@@ -213,9 +213,9 @@ def crawl_congress(congress):
                 committee = extract_committees(bill)
                 committees.extend(committee)
             except Exception as e:
-                    exc_type, exc_obj, exc_tb = sys.exc_info()
-                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                    logger.debug(exc_type, fname, exc_tb.tb_lineno)
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                logger.debug(exc_type, fname, exc_tb.tb_lineno)
 
     congress_obj.legislation = pd.DataFrame(legislation)
     congress_obj.legislation.columns = [
@@ -241,7 +241,7 @@ def crawl_congress(congress):
 
 if __name__ == '__main__':
     logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     jobs = []
     dirs = os.walk(DATA_DIR).next()[1]
     p = Pool(12)
