@@ -243,7 +243,7 @@ if __name__ == '__main__':
     logger = multiprocessing.log_to_stderr()
     logger.setLevel(logging.INFO)
     jobs = []
-    dirs = [c for int(c) in os.walk(DATA_DIR).next()[1] if c > 100]
+    dirs = [c for c in os.walk(DATA_DIR).next()[1] if int(c) > 100]
     p = Pool(12)
 
     try:
