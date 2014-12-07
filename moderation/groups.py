@@ -1,1 +1,0 @@
-MODERATOR = "moderator"
