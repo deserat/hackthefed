@@ -118,10 +118,12 @@ def extract_committees(bill):
         if sub:
             logger.debug("is subcommittee")
             c_list.append('subcommittee')
+            c_list.append(c.get('subcommittee'))
             sub_id = "{0}-{1}".format(c.get('committee_id'), c.get('subcommittee_id'))
             logger.debug("Processing subcommittee {0}".format(sub_id))
             c_list.append(sub_id)
         else:
+            c_list.append('committee')
             c_list.append(c.get('committee'))
             c_list.append(c.get('committee_id'))
         c_list.append(bill_id)
@@ -216,21 +218,32 @@ def crawl_congress(congress):
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 logger.debug(exc_type, fname, exc_tb.tb_lineno)
-
-    congress_obj.legislation = pd.DataFrame(legislation)
-    congress_obj.legislation.columns = [
-        'congress', 'bill_id', 'bill_type', 'enacted_as', 'active', 'active_at',
-        'awaiting_signature', 'enacted', 'vetoed', 'introduced_at', 'number',
-        'official_title', 'popular_title', 'short_title', 'status', 'status_at',
-        'top_subject', 'updated_at'
-    ]
-
     try:
-        congress_obj.sponsors = pd.DataFrame(sponsors)
-        congress_obj.cosponsors = pd.DataFrame(cosponsors)
-        # congress_obj.events = pd.DataFrame(events)
-        congress_obj.committees = pd.DataFrame(committees)
 
+        congress_obj.legislation = pd.DataFrame(legislation)
+        congress_obj.legislation.columns = [
+            'congress', 'bill_id', 'bill_type', 'enacted_as', 'active', 'active_at',
+            'awaiting_signature', 'enacted', 'vetoed', 'introduced_at', 'number',
+            'official_title', 'popular_title', 'short_title', 'status', 'status_at',
+            'top_subject', 'updated_at'
+        ]
+
+        congress_obj.sponsors = pd.DataFrame(sponsors)
+        congress_obj.sponsors.columns = [
+            'type', 'thomas_id', 'bill_id', 'district', 'state'
+        ]
+
+        congress_obj.cosponsors = pd.DataFrame(cosponsors)
+        congress_obj.sponsors.columns = [
+            'thomas_id', 'bill_id', 'district', 'state'
+        ]
+
+        congress_obj.committees = pd.DataFrame(committees)
+        congress_obj.committees.columns = [
+            'type', 'name', 'committee_id', 'bill_id', 'congress'
+        ]
+
+        # congress_obj.events = pd.DataFrame(events)
         pl.save_congress(congress_obj)
         # print "{0} - {1}".format(congress, len(legislation))
     except Exception as e:
