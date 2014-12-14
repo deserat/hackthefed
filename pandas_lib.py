@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import yaml  # Ruby users should die.
+import logging
 
 DATA_DIR = "./data"
 

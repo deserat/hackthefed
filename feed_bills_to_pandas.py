@@ -164,10 +164,10 @@ def crawl_congress(congress):
     :return dict: A Dictionary of DataFrames
     """
 
-    logger = multiprocessing.log_to_stderr()
-    logger.setLevel(logging.DEBUG)
+    #logger = multiprocessing.log_to_stderr()
+    #logger.setLevel(logging.INFO)
 
-    logger.info("Begin processing {0}".format(congress))
+    logger.info("Begining congress {0}".format(congress))
 
     congress_obj = Congress(congress)
 
@@ -193,21 +193,32 @@ def crawl_congress(congress):
     bills = "{0}/{1}/bills".format(DATA_DIR, congress)
     index = 0
 
+    files_processed = 0
+
     for root, dirs, files in os.walk(bills):
         if "data.json" in files and "text-versions" not in root:
-            file_path = "{0}/data.json".format(root)
-            bill = json.loads(open(file_path, 'r').read())
+            try:
+                file_path = "{0}/data.json".format(root)
+                bill = json.loads(open(file_path, 'r').read())
+                logger.debug(file_path)
+
 
             # let's start with just the legislative information
             try:
                 record = extract_legislation(bill)
                 legislation.append(record)
 
-                sponsor = extract_sponsor(bill)
-                sponsors.append(sponsor)
+                record = extract_legislation(bill)
+                legislation.append(record)
+                files_processed += 1
+            except Error as e:
+                logger.info(e)
 
-                cosponsor = extract_cosponsors(bill)
-                cosponsors.extend(cosponsor)
+    congress_obj.legislation = pd.DataFrame(legislation)
+    pl.save_congress(congress_obj)
+
+    logger.info("Processed {0} in Congress {1}".format(files_processed, congress))
+    # print "{0} - {1}".format(congress, len(legislation))
 
                 # evts = extract_events(bill)
                 # events.append(evts)
