@@ -117,7 +117,7 @@ def extract_committees(bill):
         sub = c.get('subcommittee_id')
         if sub:
             logger.debug("is subcommittee")
-            c_list.append('subcommittee')
+            c_list.append('subcommittee')  # type
             c_list.append(c.get('subcommittee'))
             sub_id = "{0}-{1}".format(c.get('committee_id'), c.get('subcommittee_id'))
             logger.debug("Processing subcommittee {0}".format(sub_id))
@@ -235,12 +235,12 @@ def crawl_congress(congress):
 
         congress_obj.cosponsors = pd.DataFrame(cosponsors)
         congress_obj.sponsors.columns = [
-            'thomas_id', 'bill_id', 'district', 'state'
+            'type', 'thomas_id', 'bill_id', 'district', 'state'
         ]
 
         congress_obj.committees = pd.DataFrame(committees)
         congress_obj.committees.columns = [
-            'type', 'name', 'committee_id', 'bill_id', 'congress'
+            'type', 'name', 'committee_id', 'bill_id'
         ]
 
         # congress_obj.events = pd.DataFrame(events)
@@ -249,6 +249,8 @@ def crawl_congress(congress):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        logger.debug(e)
+        logger.debug(exc_tb.tb_lineno)
         logger.debug(exc_type, fname, exc_tb.tb_lineno)
 
 
