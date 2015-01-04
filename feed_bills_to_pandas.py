@@ -101,6 +101,21 @@ def extract_cosponsors(bill):
     return cosponsor_map
 
 
+def extract_subjects(bill):
+    """
+    Return a list subject for legislation.
+    """
+    logger.debug("Extracting Subjects")
+    subject_map = []
+    subjects = bill.get('subjects', [])
+    bill_id = bill.get('bill_id', None)
+    bill_type = bill.get('bill_type', None)
+    for sub in subjects:
+        subject_map.append((bill_id, bill_type, sub))
+    logger.debug("End Extractioning Subjects")
+    return subject_map
+
+
 def extract_committees(bill):
     """
     Returns committee associations from a bill.
@@ -200,6 +215,7 @@ def crawl_congress(congress):
 
             # let's start with just the legislative information
             try:
+
                 record = extract_legislation(bill)
                 legislation.append(record)
 
@@ -209,11 +225,15 @@ def crawl_congress(congress):
                 cosponsor = extract_cosponsors(bill)
                 cosponsors.extend(cosponsor)
 
+                subject = extract_subjects(bill)
+                subjects.extend(subject)
+
                 # evts = extract_events(bill)
                 # events.append(evts)
 
                 committee = extract_committees(bill)
                 committees.extend(committee)
+
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -241,6 +261,11 @@ def crawl_congress(congress):
         congress_obj.committees = pd.DataFrame(committees)
         congress_obj.committees.columns = [
             'type', 'name', 'committee_id', 'bill_id'
+        ]
+
+        congress_obj.subjects = pd.DataFrame(subjects)
+        congress_obj.subjects.columns = [
+            'bill_id', 'bill_type', 'subject'
         ]
 
         # congress_obj.events = pd.DataFrame(events)
