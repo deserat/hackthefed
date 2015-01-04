@@ -238,6 +238,7 @@ def crawl_congress(congress):
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 logger.debug(exc_type, fname, exc_tb.tb_lineno)
+
     try:
 
         congress_obj.legislation = pd.DataFrame(legislation)
@@ -275,8 +276,9 @@ def crawl_congress(congress):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         logger.debug(e)
+        logger.debug(exc_type)
+        logger.debug(fname)
         logger.debug(exc_tb.tb_lineno)
-        logger.debug(exc_type, fname, exc_tb.tb_lineno)
 
 
 if __name__ == '__main__':
