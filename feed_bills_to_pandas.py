@@ -171,9 +171,9 @@ def extract_events(bill):
     return events
 
 
-def crawl_congress(congress):
+def import_congress(congress):
     """
-    A container function that recurses a set of directory and extracts data from
+    A container function that recurses a set of directories and extracts data from
     the legislation contained therein.
 
     :return dict: A Dictionary of DataFrames
@@ -290,7 +290,7 @@ if __name__ == '__main__':
     p = Pool(12)
 
     try:
-        p.map_async(crawl_congress, dirs).get(999999)
+        p.map_async(import_congress, dirs).get(999999)
     except KeyboardInterrupt:
         pool.terminate()
         print "You cancelled the program!"
