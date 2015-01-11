@@ -94,6 +94,10 @@ def make_congress_dir(congress):
 
 
 def save_congress(congress):
+    """
+    Takes a congress object with legislation, sponser, cosponsor, commities
+    and subjects attributes and saves each item to it's own csv file.
+    """
     try:
         congress_dir = make_congress_dir(congress.name)
         congress.legislation.to_csv("{0}/legislation.csv".format(congress_dir), encoding='utf-8')
