@@ -1,9 +1,9 @@
-Flask==0.10.1
+Flask==0.12.3
 Flask-PyMongo==0.3.0
-Jinja2==2.7.3
+Jinja2==2.11.3
 MarkupSafe==0.23
 PyYAML==3.11
-Werkzeug==0.9.6
+Werkzeug==0.15.3
 itsdangerous==0.24
 nltk==2.0.4
 pymongo==2.7.1
